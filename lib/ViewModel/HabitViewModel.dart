@@ -1,0 +1,44 @@
+import 'package:flutter/material.dart';
+import 'package:may_be_too_basic/Models/Habits.dart';
+
+class Habitviewmodel extends ChangeNotifier
+{
+
+  final List<Habits> myHabits = [];
+
+  bool AddHabit(String habitName)
+  {
+    
+    if(habitName == null || habitName.isEmpty)
+    {
+        print("Habit name is null or empty, cannot add into habit list");
+        return false;
+    }
+    var habit = Habits(habitName: habitName);
+    if(myHabits.contains( habit))
+    {
+        print("$habit already exists, cannot add into habit list");
+        return false;
+    }
+    myHabits.add( habit);
+    print("Successfully added ${habit.habitName} into habit list");
+    notifyListeners();
+    return true;
+  }
+
+  bool RemoveHabit(Habits habit)
+  {
+    if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
+    {
+        print("habit is null or habit name is null or empty, cannot remove into habit list");
+        return false;
+    }
+
+    var removeResult = myHabits.remove( habit);
+    print(  "Successfully removed $habit into habit list: $removeResult"  );
+    notifyListeners();
+    return removeResult;
+  }
+
+  
+}
