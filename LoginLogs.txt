@@ -1,0 +1,3 @@
+05/08/2025:
+Created the basic app for changing the colour and created the apk using     flutter build apk --release
+Created all the backlog/ features in https://github.com/speaksStick/may_be_too_basic

@@ -40,5 +40,32 @@ class Habitviewmodel extends ChangeNotifier
     return removeResult;
   }
 
+  bool EditHabitDescription(Habits habit, String newDescription)
+  {
+    if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
+    {
+        print("habit is null or habit name is null or empty, cannot edit into habit list");
+        return false;
+    }
+    if(newDescription == null || newDescription.isEmpty)
+    {
+        print("new description is null or empty, cannot edit into habit list");
+        return false;
+    }
+
+    var habitIndex = myHabits.indexOf(habit);
+
+    if(habitIndex == -1)
+    {
+      print("Habit not found in the list, cannot edit");
+      return false;
+    } 
+
+    myHabits[habitIndex].setHabitDescription = newDescription;
+    print("Successfully edited habit description to $newDescription");
+    notifyListeners();
+    return true;
+  }
+
   
 }
