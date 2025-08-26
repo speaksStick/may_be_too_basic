@@ -16,7 +16,7 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
     var habit = Habits(habitName: habitName);
-    if(myHabits.contains( habit))
+    if(myHabits.any((habit) => habit.habitName == habitName))
     {
         print("$habit already exists, cannot add into habit list");
         return false;
