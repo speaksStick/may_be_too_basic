@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:may_be_too_basic/Models/Habits.dart';
 
 class Habitviewmodel extends ChangeNotifier
@@ -67,5 +68,31 @@ class Habitviewmodel extends ChangeNotifier
     return true;
   }
 
+  bool EditHabitColor(Habits habit, Color newColor)
+  {
+    if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
+    {
+        print("habit is null or habit name is null or empty, cannot edit into habit list");
+        return false;
+    }
+    if(newColor == null)
+    {
+        print("new color is null, cannot edit into habit list");
+        return false;
+    }
+
+    var habitIndex = myHabits.indexOf(habit);
+
+    if(habitIndex == -1)
+    {
+      print("Habit not found in the list, cannot edit");
+      return false;
+    } 
+
+    myHabits[habitIndex].setHabitColor = newColor;
+    print("Successfully edited habit color to $newColor");
+    notifyListeners();
+    return true;
+  }
   
 }
