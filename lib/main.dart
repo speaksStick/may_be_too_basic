@@ -5,6 +5,7 @@ import 'package:may_be_too_basic/Models/Habits.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:may_be_too_basic/ViewModel/HabitViewModel.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 void main() {
   runApp(
@@ -110,12 +111,43 @@ class MyHabitView extends StatelessWidget {
     );
   }
 
+void OnColorChangeIconPressed(BuildContext context, Habits habit) {
+    Color pickerColor = habit.HabitColor(); // Default color
+
+    void onColorChanged(Color color) {
+      pickerColor = color;
+      print("Color changed to $pickerColor");
+      Provider.of<Habitviewmodel>(context, listen: false)
+          .EditHabitColor(habit, pickerColor);
+    }
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              title: const Text('Pick a color!'),
+              content: SingleChildScrollView(
+                child: ColorPicker(
+                    pickerColor: pickerColor, onColorChanged: onColorChanged),
+                    
+              ),
+              actions: 
+              [
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],); // Default color
+        });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final habits = Provider.of<Habitviewmodel>(context).myHabits;
     print("Current habits length: ${habits.length}");
     print("Current habits: ${habits.toString()}");
-
+    
     return Scaffold(
         appBar: AppBar(
           title: Center(child: new Text("...")),
@@ -132,6 +164,7 @@ class MyHabitView extends StatelessWidget {
                         elevation: 4.0,
                         margin: const EdgeInsets.symmetric(
                             vertical: 8, horizontal: 16),
+                        color: currentHabit.HabitColor(),    
                         child: ListTile(
                             mouseCursor: SystemMouseCursors.click,
                             hoverColor: Colors.blueGrey,
@@ -196,6 +229,13 @@ class MyHabitView extends StatelessWidget {
                                             HabitAttribute.HabitDescription);
                                         // You can show a dialog similar to the add habit dialog to edit the habit name
                                       }),
+
+                                      IconButton(onPressed: () 
+                                      {
+                                        OnColorChangeIconPressed(context, currentHabit);
+
+                                      } , icon: const Icon(Icons.color_lens)),  
+
                                 ],
                                 // onPressed: () => print("Delete ${currentHabit.habitName}"
                               ),
@@ -211,8 +251,6 @@ class MyHabitView extends StatelessWidget {
         ));
   }
 }
-
-
 
 // class MyTextWidget extends StatelessWidget {
 //   const MyTextWidget({super.key, required this.habitName});
