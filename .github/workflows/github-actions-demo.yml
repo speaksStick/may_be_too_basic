@@ -17,3 +17,5 @@ jobs:
           channel: stable
       - name: Run Flutter tests
         run: flutter test 
+      - name: Worflow name
+        run: echo "Workflow Name is: $GITHUB_WORKFLOW"
