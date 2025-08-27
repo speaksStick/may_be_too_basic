@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:may_be_too_basic/Models/Habits.dart';
 import 'package:may_be_too_basic/ViewModel/HabitViewModel.dart';
 
-class HabitViewModel_Test extends Habitviewmodel {
+class HabitViewModel_test extends Habitviewmodel {
   
   bool notifyListenersCalled = false;
   int notifyListenersCalledCount = 0;
@@ -18,7 +18,7 @@ class HabitViewModel_Test extends Habitviewmodel {
   void main() {
     test("AddHabit_ValidHabitName_HabitIsAddedTomyHabitsList", () {
       // Arrange
-      var habitViewModel = HabitViewModel_Test();
+      var habitViewModel = HabitViewModel_test();
       var habitName = "Exercise";
 
       // Act
@@ -34,7 +34,7 @@ class HabitViewModel_Test extends Habitviewmodel {
 
     test("AddHabit_HabitNameIsEmpty_HabitIsNotAddedTomyHabitsList", () {
       // Arrange
-      var habitViewModel = HabitViewModel_Test();
+      var habitViewModel = HabitViewModel_test();
       var habitName = "";
 
       // Act
@@ -49,7 +49,7 @@ class HabitViewModel_Test extends Habitviewmodel {
 
     test("AddHabit_DuplicateHabitName_HabitIsNotAddedTomyHabitsList", () {
       // Arrange
-      var habitViewModel = HabitViewModel_Test();
+      var habitViewModel = HabitViewModel_test();
       var habitNameOne = "Exercise";
 
       // Act
@@ -69,7 +69,7 @@ class HabitViewModel_Test extends Habitviewmodel {
     });
 
     test('removes habit when valid', () {
-      final vm = HabitViewModel_Test();
+      final vm = HabitViewModel_test();
       final habit = Habits(habitName: 'Read');
       vm.myHabits.add(habit);
 
@@ -83,7 +83,7 @@ class HabitViewModel_Test extends Habitviewmodel {
 
 
     test('returns false when habit name is empty', () {
-      final vm = HabitViewModel_Test();
+      final vm = HabitViewModel_test();
       final habit = Habits(habitName: '');
       final result = vm.RemoveHabit(habit);
 
@@ -93,7 +93,7 @@ class HabitViewModel_Test extends Habitviewmodel {
   
 
     test('edits description when valid', () {
-      final vm = HabitViewModel_Test();
+      final vm = HabitViewModel_test();
       final habit = Habits(habitName: 'Run');
       vm.myHabits.add(habit);
 
@@ -105,7 +105,7 @@ class HabitViewModel_Test extends Habitviewmodel {
     });
 
     test('returns false when description is empty', () {
-      final vm = HabitViewModel_Test();
+      final vm = HabitViewModel_test();
       final habit = Habits(habitName: 'Run');
       vm.myHabits.add(habit);
 
@@ -116,7 +116,7 @@ class HabitViewModel_Test extends Habitviewmodel {
     });
 
     test('returns false when habit not in list', () {
-      final vm = HabitViewModel_Test();
+      final vm = HabitViewModel_test();
       final habit = Habits(habitName: 'Run');
 
       final result = vm.EditHabitDescription(habit, 'desc');
@@ -127,7 +127,7 @@ class HabitViewModel_Test extends Habitviewmodel {
   
 
     test('edits color when valid', () {
-      final vm = HabitViewModel_Test();
+      final vm = HabitViewModel_test();
       final habit = Habits(habitName: 'Swim');
       vm.myHabits.add(habit);
 
@@ -139,7 +139,7 @@ class HabitViewModel_Test extends Habitviewmodel {
     });
 
     test('returns false when habit not in list', () {
-      final vm = HabitViewModel_Test();
+      final vm = HabitViewModel_test();
       final habit = Habits(habitName: 'Swim');
 
       final result = vm.EditHabitColor(habit, Colors.green);
