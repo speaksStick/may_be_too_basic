@@ -2,7 +2,7 @@ name: may_be_too_basic Pipeline
 on: [pull_request]
 jobs:
   pipeline:
-  name: pipeline
+    name: pipeline
     runs-on: ubuntu-latest
     steps:
       - run: echo "The pipeline got triggered by ${{ github.event_name }} event."
