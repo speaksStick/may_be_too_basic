@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:may_be_too_basic/Models/Habits.dart';
 import 'package:may_be_too_basic/ViewModel/HabitViewModel.dart';
-
+ 
 class HabitViewModel_test extends Habitviewmodel {
   
   bool notifyListenersCalled = false;
