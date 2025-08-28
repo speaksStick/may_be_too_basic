@@ -1,37 +1,76 @@
 import 'package:flutter/material.dart';
 
-class Habits 
-{
-
-  String HabitName () =>  habitName;
-  String HabitDescription () =>  myHabitDescription;
-  Color HabitColor () => habitColor;
-
+class Habits {
+  //Member variables
   String habitName;
   String myHabitDescription = "";
   Color habitColor = Colors.grey; // Default color
+  DateTime myHabitCompletionDateTime = new DateTime(1970, 1, 1);
+
+  
+
+  //Getter methods
+  String HabitName() => habitName;
+  String HabitDescription() => myHabitDescription;
+  Color HabitColor() => habitColor;
+  DateTime HabitCompletionDateTime() => myHabitCompletionDateTime;
 
   Habits({required this.habitName});
 
-  set setHabitDescription(String habitDescription) 
-  {
-    if(habitDescription == null || habitDescription.isEmpty)
-    {
-        print("Habit name is null or empty, cannot set habit name");
-        return;
+ set setHabitCompletionDateTime(DateTime dateTime) {
+    if (dateTime == null) {
+      print("DateTime is null, cannot set habit completion date");
+      return;
+    }
+    myHabitCompletionDateTime = dateTime;
+    print("Successfully set habit completion date to $myHabitCompletionDateTime");
+  }
+
+  set setHabitDescription(String habitDescription) {
+    if (habitDescription == null || habitDescription.isEmpty) {
+      print("Habit name is null or empty, cannot set habit name");
+      return;
     }
     myHabitDescription = habitDescription;
     print("Successfully set habit name to $habitName");
   }
 
-  set setHabitColor(Color color)
-  {
-    if(color == null)
-    {
-        print("Color is null, cannot set habit color");
-        return;
+  set setHabitColor(Color color) {
+    if (color == null) {
+      print("Color is null, cannot set habit color");
+      return;
     }
     habitColor = color;
     print("Successfully set habit color to $habitColor");
+  }
+
+
+  bool GetTodaysHabitCompletionCertificate() {
+    DateTime dateTimeNow = DateTime.timestamp();
+    DateTime dateTimeToday = DateTime(
+      dateTimeNow.year,
+      dateTimeNow.month,
+      dateTimeNow.day,
+      0,
+      0,
+      0,
+    );
+
+  DateTime habitCompletionDate = DateTime(
+      myHabitCompletionDateTime.year,
+      myHabitCompletionDateTime.month,
+      myHabitCompletionDateTime.day,
+    );
+
+    if(myHabitCompletionDateTime!=null && habitCompletionDate.isBefore( dateTimeToday))
+    {
+      habitCompletionDate = DateTime(1970, 1, 1);
+      return false;
+    }
+    if(myHabitCompletionDateTime!=null && myHabitCompletionDateTime.isAfter(dateTimeToday))
+    {
+      return true;
+    }
+    return false;
   }
 }
