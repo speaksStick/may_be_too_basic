@@ -68,6 +68,7 @@ class Habitviewmodel extends ChangeNotifier
     return true;
   }
 
+
   bool EditHabitColor(Habits habit, Color newColor)
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
@@ -94,5 +95,54 @@ class Habitviewmodel extends ChangeNotifier
     notifyListeners();
     return true;
   }
-  
+
+
+  bool GetTodaysHabitCompletionCertificate(Habits habit)
+  {
+    if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
+    {
+        print("habit is null or habit name is null or empty, cannot get today's completion certificate");
+        return false;
+    }
+
+    var habitIndex = myHabits.indexOf(habit);
+
+    if(habitIndex == -1)
+    {
+      print("Habit not found in the list, cannot get today's completion certificate");
+      return false;
+    } 
+    notifyListeners();
+    return myHabits[habitIndex].GetTodaysHabitCompletionCertificate();
+  }
+
+
+
+  bool SetHabitCompletionDateTime(Habits habit, DateTime dateTime)
+  {
+    if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
+    {
+        print("habit is null or habit name is null or empty, cannot set habit completion date");
+        return false;
+    }
+    if(dateTime == null)
+    {
+        print("dateTime is null, cannot set habit completion date");
+        return false;
+    }
+
+    var habitIndex = myHabits.indexOf(habit);
+
+    if(habitIndex == -1)
+    {
+      print("Habit not found in the list, cannot set habit completion date");
+      return false;
+    } 
+
+    myHabits[habitIndex].setHabitCompletionDateTime = dateTime;
+    print("Successfully set habit completion date to $dateTime");
+    notifyListeners();
+    return true;
+  }
+
 }

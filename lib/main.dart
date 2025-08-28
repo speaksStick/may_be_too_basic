@@ -234,8 +234,39 @@ void OnColorChangeIconPressed(BuildContext context, Habits habit) {
                                       {
                                         OnColorChangeIconPressed(context, currentHabit);
 
-                                      } , icon: const Icon(Icons.color_lens)),  
+                                      } , icon: const Icon(Icons.color_lens),
+                                      tooltip: "Choose color for the habit!",),  
 
+
+                                      IconButton(onPressed: ()
+                                      {
+                                        Provider.of<Habitviewmodel>(context, listen: false).SetHabitCompletionDateTime(currentHabit, DateTime.now());
+                                      }, icon: const Icon(Icons.check_circle, color: Colors.white), tooltip: "Mark as done!",),
+
+                                      //Display thing
+                                      Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: Provider.of<Habitviewmodel>(
+                                                    context, listen: false)
+                                                .GetTodaysHabitCompletionCertificate(
+                                                    currentHabit)
+                                            ? Colors.green
+                                            : Colors.red,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        Provider.of<Habitviewmodel>(context, listen: false)
+                                                .GetTodaysHabitCompletionCertificate(
+                                                    currentHabit)
+                                            ? "Today's Goal achieved"
+                                            : "Yet to achieve today's goal",
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      )),
+                                
                                 ],
                                 // onPressed: () => print("Delete ${currentHabit.habitName}"
                               ),
