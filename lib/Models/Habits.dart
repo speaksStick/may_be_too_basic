@@ -46,7 +46,7 @@ class Habits {
 
 
   bool GetTodaysHabitCompletionCertificate() {
-    DateTime dateTimeNow = DateTime.timestamp();
+    DateTime dateTimeNow = DateTime.now();
     DateTime dateTimeToday = DateTime(
       dateTimeNow.year,
       dateTimeNow.month,
@@ -64,13 +64,18 @@ class Habits {
 
     if(myHabitCompletionDateTime!=null && habitCompletionDate.isBefore( dateTimeToday))
     {
-      habitCompletionDate = DateTime(1970, 1, 1);
+      myHabitCompletionDateTime = DateTime(1970, 1, 1);
+      print("Resetting habit completion date to $myHabitCompletionDateTime");
       return false;
     }
     if(myHabitCompletionDateTime!=null && myHabitCompletionDateTime.isAfter(dateTimeToday))
     {
+      print(
+          "Habit completion date $myHabitCompletionDateTime is after today's date $dateTimeToday"     
+      );
       return true;
     }
+    print("Habit completion date $myHabitCompletionDateTime is not after today's date $dateTimeToday");
     return false;
   }
 }

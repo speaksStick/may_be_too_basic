@@ -158,8 +158,7 @@ void OnColorChangeIconPressed(BuildContext context, Habits habit) {
                   itemCount: habits.length,
                   itemBuilder: (context, index) {
                     final currentHabit = habits[index];
-                    print(
-                        "current habit to display: " + currentHabit.habitName);
+                    print("current habit to display: " + currentHabit.habitName);
                     return Card(
                         elevation: 4.0,
                         margin: const EdgeInsets.symmetric(
@@ -171,6 +170,10 @@ void OnColorChangeIconPressed(BuildContext context, Habits habit) {
                             title: Text(currentHabit.habitName,
                                 style: TextStyle(fontSize: 22, color: const Color.fromARGB(255, 22, 61, 92))),
                             contentPadding: EdgeInsets.all(10.0),
+                            selected: Provider.of<Habitviewmodel>(context, listen: false)
+                                .GetTodaysHabitCompletionCertificate(
+                                    currentHabit),
+                            selectedTileColor: Colors.green.withOpacity(0.5),
                             subtitle: currentHabit.HabitDescription().isNotEmpty
                                 ? Text(currentHabit.HabitDescription(),
                                     maxLines: 2, style: TextStyle(fontSize: 15))
@@ -203,70 +206,127 @@ void OnColorChangeIconPressed(BuildContext context, Habits habit) {
                                 // Takes only the necessary space in horizontal direction
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  IconButton(
-                                    icon: Icon(Icons.delete, color: Colors.red,),
-                                    tooltip: "Delete ${currentHabit.habitName}",
-                  
-                                    onPressed: () =>
-                                        Provider.of<Habitviewmodel>(context,
-                                                listen: false)
-                                            .RemoveHabit(currentHabit),
-                                  ),
-                                  IconButton(
-                                      icon: const Icon(
-                                        Icons.edit,
-                                        color: Colors.green,
-                                      ),
-                                      tooltip: "Edit ${currentHabit.habitName}",
-                                      onPressed: () {
-                                        // Implement edit functionality here
-                                        print(
-                                            "Edit button pressed for ${currentHabit.habitName}");
-                                        myUpdateHabitAttributes(
-                                            context,
-                                            "Edit Description for $currentHabit",
-                                            currentHabit,
-                                            HabitAttribute.HabitDescription);
-                                        // You can show a dialog similar to the add habit dialog to edit the habit name
-                                      }),
 
-                                      IconButton(onPressed: () 
-                                      {
-                                        OnColorChangeIconPressed(context, currentHabit);
+                                  Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 12, vertical: 6),
+                                          decoration: BoxDecoration(
+                                            color: Provider.of<Habitviewmodel>(
+                                                        context, listen: false)
+                                                    .GetTodaysHabitCompletionCertificate(
+                                                        currentHabit)
+                                                ? Colors.green
+                                                : Colors.red,
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Text(
+                                            Provider.of<Habitviewmodel>(context, listen: false)
+                                                    .GetTodaysHabitCompletionCertificate(
+                                                        currentHabit)
+                                                ? "Today's Goal achieved"
+                                                : "Yet to achieve today's goal",
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold),
+                                          )),
+                                          
+                                  PopupMenuButton(
+                                    onSelected: (value) {
+                                      // Handle menu item selection if needed
+                                      print("Selected menu item: $value");
 
-                                      } , icon: const Icon(Icons.color_lens),
-                                      tooltip: "Choose color for the habit!",),  
-
-
-                                      IconButton(onPressed: ()
-                                      {
-                                        Provider.of<Habitviewmodel>(context, listen: false).SetHabitCompletionDateTime(currentHabit, DateTime.now());
-                                      }, icon: const Icon(Icons.check_circle, color: Colors.white), tooltip: "Mark as done!",),
-
-                                      //Display thing
-                                      Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 6),
-                                      decoration: BoxDecoration(
-                                        color: Provider.of<Habitviewmodel>(
-                                                    context, listen: false)
-                                                .GetTodaysHabitCompletionCertificate(
-                                                    currentHabit)
-                                            ? Colors.green
-                                            : Colors.red,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        Provider.of<Habitviewmodel>(context, listen: false)
-                                                .GetTodaysHabitCompletionCertificate(
-                                                    currentHabit)
-                                            ? "Today's Goal achieved"
-                                            : "Yet to achieve today's goal",
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold),
-                                      )),
-                                
+                                      switch (value) {
+                                        case 'delete':
+                                          Provider.of<Habitviewmodel>(context,
+                                                  listen: false)
+                                              .RemoveHabit(currentHabit);
+                                          break;
+                                        case 'edit':
+                                          myUpdateHabitAttributes(
+                                              context,
+                                              "Edit Description for ${currentHabit.habitName}",
+                                              currentHabit,
+                                              HabitAttribute.HabitDescription);
+                                          break;
+                                        case 'color':
+                                          OnColorChangeIconPressed(context, currentHabit);
+                                          break;
+                                        case 'mark_done':
+                                          Provider.of<Habitviewmodel>(context, listen: false).SetHabitCompletionDateTime(currentHabit, DateTime.now());
+                                          break;
+                                        default:
+                                          print("Unknown menu item selected");
+                                      }
+                                    },
+                                    itemBuilder: (context) {
+                                      return [
+                                        PopupMenuItem(
+                                          value: 'delete',
+                                          child: Text('Delete'),
+                                        ),
+                                        PopupMenuItem(
+                                          value: 'edit',
+                                          child: Text('Edit'),
+                                        ),
+                                        PopupMenuItem(
+                                          value: 'color',
+                                          child: Text('Change Color'),
+                                        ),
+                                        PopupMenuItem(
+                                          value: 'mark_done',
+                                          child: Text("Mark as Done"),
+                                        ),
+                                      ];
+                                    },
+                                    ),
+                                    //children: [
+                                    //   PopupMenuItem(
+                                    //     child: IconButton(
+                                    //       icon: Icon(Icons.delete, color: Colors.red,),
+                                    //       tooltip: "Delete ${currentHabit.habitName}",
+                                                          
+                                    //       onPressed: () =>
+                                    //           Provider.of<Habitviewmodel>(context,
+                                    //                   listen: false)
+                                    //               .RemoveHabit(currentHabit),
+                                    //     ),
+                                    //   ),
+                                    //   IconButton(
+                                    //       icon: const Icon(
+                                    //         Icons.edit,
+                                    //         color: Colors.green,
+                                    //       ),
+                                    //       tooltip: "Edit ${currentHabit.habitName}",
+                                    //       onPressed: () {
+                                    //         // Implement edit functionality here
+                                    //         print(
+                                    //             "Edit button pressed for ${currentHabit.habitName}");
+                                    //         myUpdateHabitAttributes(
+                                    //             context,
+                                    //             "Edit Description for $currentHabit",
+                                    //             currentHabit,
+                                    //             HabitAttribute.HabitDescription);
+                                    //         // You can show a dialog similar to the add habit dialog to edit the habit name
+                                    //       }),
+                                    
+                                    //       IconButton(onPressed: () 
+                                    //       {
+                                    //         OnColorChangeIconPressed(context, currentHabit);
+                                    
+                                    //       } , icon: const Icon(Icons.color_lens),
+                                    //       tooltip: "Choose color for the habit!",),  
+                                    
+                                    
+                                    //       IconButton(onPressed: ()
+                                    //       {
+                                    //         Provider.of<Habitviewmodel>(context, listen: false).SetHabitCompletionDateTime(currentHabit, DateTime.now());
+                                    //       }, icon: const Icon(Icons.check_circle, color: Colors.white), tooltip: "Mark as done!",),
+                                    
+                                           //Display thing
+                                          
+                                    
+                                    // ],
+                                  
                                 ],
                                 // onPressed: () => print("Delete ${currentHabit.habitName}"
                               ),
