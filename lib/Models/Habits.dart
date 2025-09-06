@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class Habits {
   //Member variables
@@ -6,7 +7,7 @@ class Habits {
   String myHabitDescription = "";
   Color habitColor = Colors.grey; // Default color
   DateTime myHabitCompletionDateTime = new DateTime(1970, 1, 1);
-
+  String habitUId = Uuid().v1();
   
 
   //Getter methods
@@ -14,6 +15,7 @@ class Habits {
   String HabitDescription() => myHabitDescription;
   Color HabitColor() => habitColor;
   DateTime HabitCompletionDateTime() => myHabitCompletionDateTime;
+  String HabitUid() => habitUId;
 
   Habits({required this.habitName});
 
