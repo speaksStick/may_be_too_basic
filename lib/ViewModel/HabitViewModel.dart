@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:may_be_too_basic/Models/Habits.dart';
@@ -22,6 +24,8 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
     myHabits.add( newHabit);
+    print("Live time tracker initiated");
+    LiveTimeTracker();
     print("Successfully added ${newHabit.habitName} into habit list");
     notifyListeners();
     return true;
@@ -183,5 +187,46 @@ class Habitviewmodel extends ChangeNotifier
     } 
     print("GetHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
     return myHabits[habitIndex].HabitColor();
+  }
+
+  void LiveTimeTracker () async
+  {
+    while(true)
+    {
+     var timeNow = DateTime.timestamp();
+     var midnight = DateTime(timeNow.year, timeNow.month, timeNow.day).add(Duration(days: 1));
+    print(  "================LiveTimeTracker called at $timeNow======================="  );
+    // Check if current time is after midnight
+    if(timeNow.isAfter(midnight))
+    {
+      print("###It's a new day! Resetting daily habit completion statuses. timeNow: $timeNow, midnight: $midnight");
+      for(var habit in myHabits)
+      {
+        habit.GetTodaysHabitCompletionCertificate();
+      }
+      notifyListeners();
+    }
+    await Future.delayed(Duration(seconds: 15));
+    }
+    
+  }
+
+  (bool, int) IsHabitStreakCompletionAchieved(Habits habit)
+  {
+  
+    if(habit.habitName.isEmpty)
+    {
+        print("habit is null or habit name is null or empty, cannot get habit color");
+        return (false, 0);
+    }
+
+    if(habit.myHabitCompletionDates.length >= 2)
+    {
+      print("IsHabitStreakCompletionAchieved called for habit: ${habit.habitName} with Uid: ${habit.habitUId}"  );
+      return (true, habit.myHabitCompletionDates.length);
+    }
+
+    print("IsHabitStreakCompletionAchieved: habitIndex: habit: ${habit} with Uid: ${habit.habitUId} has less than 2 completion dates"  );
+    return (false, habit.myHabitCompletionDates.length);
   }
 }
