@@ -15,14 +15,14 @@ class Habitviewmodel extends ChangeNotifier
         print("Habit name is null or empty, cannot add into habit list");
         return false;
     }
-    var habit = Habits(habitName: habitName);
-    if(myHabits.any((habit) => habit.habitName == habitName))
+    var newHabit = Habits(habitName: habitName);
+    if(myHabits.any((habit) => habit.habitName == habitName || newHabit.habitUId == habit.habitUId))
     {
-        print("$habit already exists, cannot add into habit list");
+        print("$newHabit already exists, cannot add into habit list");
         return false;
     }
-    myHabits.add( habit);
-    print("Successfully added ${habit.habitName} into habit list");
+    myHabits.add( newHabit);
+    print("Successfully added ${newHabit.habitName} into habit list");
     notifyListeners();
     return true;
   }
@@ -54,7 +54,7 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
 
-    var habitIndex = myHabits.indexOf(habit);
+    var habitIndex = myHabits.where((h) => h.habitUId == habit.habitUId).toList().asMap().keys.first;
 
     if(habitIndex == -1)
     {
@@ -81,8 +81,9 @@ class Habitviewmodel extends ChangeNotifier
         print("new color is null, cannot edit into habit list");
         return false;
     }
-
-    var habitIndex = myHabits.indexOf(habit);
+    print("EditHabitColor called with color: $newColor for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
+    var habitIndex = myHabits.where((h) => h.habitUId == habit.habitUId).toList().asMap().keys.first;
+    print("EditHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
 
     if(habitIndex == -1)
     {
@@ -105,14 +106,13 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
 
-    var habitIndex = myHabits.indexOf(habit);
+    var habitIndex = myHabits.where((h) => h.habitUId == habit.habitUId).toList().asMap().keys.first;
 
     if(habitIndex == -1)
     {
       print("Habit not found in the list, cannot get today's completion certificate");
       return false;
     } 
-    notifyListeners();
     return myHabits[habitIndex].GetTodaysHabitCompletionCertificate();
   }
 
@@ -131,7 +131,7 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
 
-    var habitIndex = myHabits.indexOf(habit);
+    var habitIndex = myHabits.where((h) => h.habitUId == habit.habitUId  ).toList().asMap().keys.first;
 
     if(habitIndex == -1)
     {
@@ -145,4 +145,42 @@ class Habitviewmodel extends ChangeNotifier
     return true;
   }
 
+  String GeHabitDescription(Habits habit)
+  {
+    if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
+    {
+        print("habit is null or habit name is null or empty, cannot get habit description");
+        return "";
+    }
+    print("GeHabitDescription called for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
+    var habitIndex = myHabits.where((h) => h.habitUId == habit.habitUId).toList().asMap().keys.first;
+    print("GeHabitDescription: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
+
+    if(habitIndex == -1)
+    {
+      print("Habit not found in the list, cannot get habit description");
+      return "";
+    } 
+    return myHabits[habitIndex].HabitDescription();
+  }
+
+  Color GetHabitColor(Habits habit)
+  {
+    if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
+    {
+        print("habit is null or habit name is null or empty, cannot get habit color");
+        return Colors.grey;
+    }
+
+    print("GetHabitColor called for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
+    var habitIndex = myHabits.where((h) => h.habitUId == habit.habitUId).toList().asMap().keys.first;
+    print("GetHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
+
+    if(habitIndex == -1)
+    {
+      print("Habit not found in the list, cannot get habit color");
+      return Colors.grey;
+    } 
+    return myHabits[habitIndex].HabitColor();
+  }
 }
