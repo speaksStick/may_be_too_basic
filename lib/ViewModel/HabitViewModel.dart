@@ -83,13 +83,14 @@ class Habitviewmodel extends ChangeNotifier
     }
     print("EditHabitColor called with color: $newColor for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
     var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
-    print("EditHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
 
     if(habitIndex == -1)
     {
       print("Habit not found in the list, cannot edit");
       return false;
     } 
+
+    print("EditHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
 
     myHabits[habitIndex].setHabitColor = newColor;
     print("Successfully edited habit color to $newColor");
@@ -154,13 +155,13 @@ class Habitviewmodel extends ChangeNotifier
     }
     print("GeHabitDescription called for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
     var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
-    print("GeHabitDescription: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
 
     if(habitIndex == -1)
     {
       print("Habit not found in the list, cannot get habit description");
       return "";
     } 
+    print("GeHabitDescription: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
     return myHabits[habitIndex].HabitDescription();
   }
 
@@ -174,13 +175,13 @@ class Habitviewmodel extends ChangeNotifier
 
     print("GetHabitColor called for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
     var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
-    print("GetHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
 
     if(habitIndex == -1)
     {
       print("Habit not found in the list, cannot get habit color");
       return Colors.grey;
     } 
+    print("GetHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
     return myHabits[habitIndex].HabitColor();
   }
 }
