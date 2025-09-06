@@ -190,12 +190,13 @@ class MyHabitView extends StatelessWidget {
                           elevation: 4.0,
                           margin: const EdgeInsets.symmetric(
                               vertical: 8, horizontal: 16),
-                          color: Provider.of<Habitviewmodel>(context, listen: true)
-                              .GetHabitColor(currentHabit),
+                          color:
+                              Provider.of<Habitviewmodel>(context, listen: true)
+                                  .GetHabitColor(currentHabit),
                           child: Container(
-                            height: mediaQueryHeight * 0.15, // Responsive height
+                            height:
+                                mediaQueryHeight * 0.15, // Responsive height
                             child: Stack(
-                              
                               children: [
                                 // Habit Name (top-left)
                                 Positioned(
@@ -219,7 +220,7 @@ class MyHabitView extends StatelessWidget {
                                     onSelected: (value) {
                                       // Handle menu item selection if needed
                                       print("Selected menu item: $value");
-                      
+
                                       switch (value) {
                                         case 'delete':
                                           Provider.of<Habitviewmodel>(context,
@@ -276,9 +277,12 @@ class MyHabitView extends StatelessWidget {
                                   child: SizedBox(
                                     width: mediaQueryWidth * 0.5,
                                     child: Text(
-                                      Provider.of<Habitviewmodel>(context, listen: true).GeHabitDescription(currentHabit).toString(),
+                                      Provider.of<Habitviewmodel>(context,
+                                              listen: true)
+                                          .GeHabitDescription(currentHabit)
+                                          .toString(),
                                       //To watch instead of depending on provider notification as it wont work in release mode
-                                    // context.watch<Habitviewmodel>().myHabits[index].HabitDescription(),
+                                      // context.watch<Habitviewmodel>().myHabits[index].HabitDescription(),
                                       style: TextStyle(
                                           fontSize: mediaQueryWidth * 0.035),
                                       maxLines: 2,
@@ -296,13 +300,19 @@ class MyHabitView extends StatelessWidget {
                                       vertical: mediaQueryHeight * 0.01,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: context.watch<Habitviewmodel>().GetTodaysHabitCompletionCertificate(currentHabit)
+                                      color: context
+                                              .watch<Habitviewmodel>()
+                                              .GetTodaysHabitCompletionCertificate(
+                                                  currentHabit)
                                           ? Colors.green
                                           : Colors.red,
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
-                                      context.watch<Habitviewmodel>().GetTodaysHabitCompletionCertificate(currentHabit)
+                                      context
+                                              .watch<Habitviewmodel>()
+                                              .GetTodaysHabitCompletionCertificate(
+                                                  currentHabit)
                                           ? "Today's Goal achieved"
                                           : "Yet to achieve today's goal",
                                       style: TextStyle(
@@ -316,7 +326,7 @@ class MyHabitView extends StatelessWidget {
                               ],
                             ),
                           )
-                      
+
                           // padding: EdgeInsets.symmetric(
                           //   horizontal: mediaQueryWidth * 0.05,
                           //   vertical: mediaQueryHeight * 0.01,
@@ -364,7 +374,7 @@ class MyHabitView extends StatelessWidget {
                           //       // Takes only the necessary space in horizontal direction
                           //       mainAxisSize: MainAxisSize.min,
                           //       children: [
-                      
+
                           //         Container(
                           //                 padding: const EdgeInsets.symmetric(
                           //                     horizontal: 12, vertical: 6),
@@ -387,12 +397,12 @@ class MyHabitView extends StatelessWidget {
                           //                       color: Colors.white,
                           //                       fontWeight: FontWeight.bold),
                           //                 )),
-                      
+
                           //         PopupMenuButton(
                           //           onSelected: (value) {
                           //             // Handle menu item selection if needed
                           //             print("Selected menu item: $value");
-                      
+
                           //             switch (value) {
                           //               case 'delete':
                           //                 Provider.of<Habitviewmodel>(context,
@@ -442,7 +452,7 @@ class MyHabitView extends StatelessWidget {
                           //           //     child: IconButton(
                           //           //       icon: Icon(Icons.delete, color: Colors.red,),
                           //           //       tooltip: "Delete ${currentHabit.habitName}",
-                      
+
                           //           //       onPressed: () =>
                           //           //           Provider.of<Habitviewmodel>(context,
                           //           //                   listen: false)
@@ -466,23 +476,23 @@ class MyHabitView extends StatelessWidget {
                           //           //             HabitAttribute.HabitDescription);
                           //           //         // You can show a dialog similar to the add habit dialog to edit the habit name
                           //           //       }),
-                      
+
                           //           //       IconButton(onPressed: ()
                           //           //       {
                           //           //         OnColorChangeIconPressed(context, currentHabit);
-                      
+
                           //           //       } , icon: const Icon(Icons.color_lens),
                           //           //       tooltip: "Choose color for the habit!",),
-                      
+
                           //           //       IconButton(onPressed: ()
                           //           //       {
                           //           //         Provider.of<Habitviewmodel>(context, listen: false).SetHabitCompletionDateTime(currentHabit, DateTime.now());
                           //           //       }, icon: const Icon(Icons.check_circle, color: Colors.white), tooltip: "Mark as done!",),
-                      
+
                           //                  //Display thing
-                      
+
                           //           // ],
-                      
+
                           //       ],
                           //       // onPressed: () => print("Delete ${currentHabit.habitName}"
                           //     )),

@@ -54,7 +54,7 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
 
-    var habitIndex = myHabits.where((h) => h.habitUId == habit.habitUId).toList().asMap().keys.first;
+    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
 
     if(habitIndex == -1)
     {
@@ -82,7 +82,7 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
     print("EditHabitColor called with color: $newColor for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
-    var habitIndex = myHabits.where((h) => h.habitUId == habit.habitUId).toList().asMap().keys.first;
+    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
     print("EditHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
 
     if(habitIndex == -1)
@@ -106,7 +106,7 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
 
-    var habitIndex = myHabits.where((h) => h.habitUId == habit.habitUId).toList().asMap().keys.first;
+    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
 
     if(habitIndex == -1)
     {
@@ -131,7 +131,7 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
 
-    var habitIndex = myHabits.where((h) => h.habitUId == habit.habitUId  ).toList().asMap().keys.first;
+    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
 
     if(habitIndex == -1)
     {
@@ -153,7 +153,7 @@ class Habitviewmodel extends ChangeNotifier
         return "";
     }
     print("GeHabitDescription called for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
-    var habitIndex = myHabits.where((h) => h.habitUId == habit.habitUId).toList().asMap().keys.first;
+    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
     print("GeHabitDescription: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
 
     if(habitIndex == -1)
@@ -173,7 +173,7 @@ class Habitviewmodel extends ChangeNotifier
     }
 
     print("GetHabitColor called for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
-    var habitIndex = myHabits.where((h) => h.habitUId == habit.habitUId).toList().asMap().keys.first;
+    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
     print("GetHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
 
     if(habitIndex == -1)
