@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:may_be_too_basic/Models/Habits.dart';
@@ -207,5 +209,24 @@ class Habitviewmodel extends ChangeNotifier
     await Future.delayed(Duration(seconds: 15));
     }
     
+  }
+
+  (bool, int) IsHabitStreakCompletionAchieved(Habits habit)
+  {
+  
+    if(habit.habitName.isEmpty)
+    {
+        print("habit is null or habit name is null or empty, cannot get habit color");
+        return (false, 0);
+    }
+
+    if(habit.myHabitCompletionDates.length >= 2)
+    {
+      print("IsHabitStreakCompletionAchieved called for habit: ${habit.habitName} with Uid: ${habit.habitUId}"  );
+      return (true, habit.myHabitCompletionDates.length);
+    }
+
+    print("IsHabitStreakCompletionAchieved: habitIndex: habit: ${habit} with Uid: ${habit.habitUId} has less than 2 completion dates"  );
+    return (false, habit.myHabitCompletionDates.length);
   }
 }

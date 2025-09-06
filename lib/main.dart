@@ -140,6 +140,21 @@ class MyHabitView extends StatelessWidget {
         });
   }
 
+
+Widget CalculateHabitStreak(BuildContext context, double mediaQueryWidth, Habits currentHabit) 
+{
+                          return Text(
+                                      "${Provider.of<Habitviewmodel>(context, listen: true).IsHabitStreakCompletionAchieved(currentHabit).$2.toString()} days Streak..",
+                                      style: TextStyle(
+                                        fontSize: mediaQueryWidth *
+                                            0.05, // Responsive font size
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    );
+}
+
+
   @override
   Widget build(BuildContext context) {
     final habits = Provider.of<Habitviewmodel>(context).myHabits;
@@ -199,18 +214,25 @@ class MyHabitView extends StatelessWidget {
                             child: Stack(
                               children: [
                                 // Habit Name (top-left)
-                                Positioned(
-                                  left: mediaQueryWidth * 0.04,
-                                  top: mediaQueryHeight * 0.02,
-                                  child: Text(
-                                    currentHabit.habitName,
-                                    style: TextStyle(
-                                      fontSize: mediaQueryWidth *
-                                          0.05, // Responsive font size
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                                Row(
+                                  children: [
+                                    Positioned(
+                                      left: mediaQueryWidth * 0.04,
+                                      top: mediaQueryHeight * 0.02,
+                                      child: Text(
+                                        currentHabit.habitName,
+                                        style: TextStyle(
+                                          fontSize: mediaQueryWidth *
+                                              0.05, // Responsive font size
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    SizedBox(width: 8.0),
+                                    Positioned(
+                                        child: CalculateHabitStreak(context, mediaQueryWidth, currentHabit))
+                                  ],
                                 ),
                                 // Popup Menu (top-right)
                                 Positioned(
@@ -508,8 +530,7 @@ class MyHabitView extends StatelessWidget {
           child: Icon(Icons.add),
         ));
   }
-}
-
+  
 // class MyTextWidget extends StatelessWidget {
 //   const MyTextWidget({super.key, required this.habitName});
 //   final String habitName;
@@ -543,3 +564,4 @@ class MyHabitView extends StatelessWidget {
 // }
 
 
+}

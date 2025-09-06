@@ -8,6 +8,7 @@ class Habits {
   Color habitColor = Colors.grey; // Default color
   DateTime myHabitCompletionDateTime = new DateTime(1970, 1, 1);
   String habitUId = Uuid().v1();
+  List<DateTime> myHabitCompletionDates = [];
   
 
   //Getter methods
@@ -16,6 +17,7 @@ class Habits {
   Color HabitColor() => habitColor;
   DateTime HabitCompletionDateTime() => myHabitCompletionDateTime;
   String HabitUid() => habitUId;
+  List<DateTime> HabitCompletionDates() => myHabitCompletionDates;
 
   Habits({required this.habitName});
 
@@ -26,6 +28,37 @@ class Habits {
     }
     myHabitCompletionDateTime = dateTime;
     print("Successfully set habit completion date to $myHabitCompletionDateTime");
+
+    var habitCompletionDate = DateTime(
+      myHabitCompletionDateTime.year,
+      myHabitCompletionDateTime.month,
+      myHabitCompletionDateTime.day,
+    );
+
+    //Check if the previous date exists in the list. If so, then add today's date to count the streak
+    // ToDo: Need to store all the dates in future to 
+    // show for user all the dates he completed the habit
+    if(myHabitCompletionDates.contains(habitCompletionDate.subtract(Duration(days: 1))))
+    {
+      print("Habit streak continues, adding today's date to habit completion dates");
+
+      if (!myHabitCompletionDates.contains(habitCompletionDate)) {
+      myHabitCompletionDates.add(habitCompletionDate);
+      print("Added $habitCompletionDate to habit completion dates");
+    } else {
+      print("$habitCompletionDate already exists in habit completion dates");
+    }
+    }
+    else
+    {
+      print("Habit streak broken, resetting habit completion dates to today's date only");
+      myHabitCompletionDates.clear();
+      myHabitCompletionDates.add(habitCompletionDate);
+      print("Reset habit completion dates to $myHabitCompletionDates");
+    }
+  
+
+    
   }
 
   set setHabitDescription(String habitDescription) {
