@@ -147,4 +147,44 @@ class HabitViewModel_test extends Habitviewmodel {
       expect(result, false);
       expect(vm.notifyListenersCalled, false);
     });
+
+    // ToDo: Need to refactor TimeTracker and write robust tests
+     group('Habitviewmodel', () {
+    late Habitviewmodel viewModel;
+    late Habits habit;
+
+    setUp(() {
+      viewModel = Habitviewmodel();
+      habit = Habits(habitName: 'Test Habit');
+    });
+
+    test('IsHabitStreakCompletionAchieved returns false and 0 for empty streak', () {
+      final result = viewModel.IsHabitStreakCompletionAchieved(habit);
+      expect(result.$1, false);
+      expect(result.$2, 0);
+    });
+
+    test('IsHabitStreakCompletionAchieved returns true and streak length for streak >= 2', () {
+      habit.myHabitCompletionDates.addAll([
+        DateTime.now().subtract(Duration(days: 2)),
+        DateTime.now().subtract(Duration(days: 1)),
+      ]);
+      final result = viewModel.IsHabitStreakCompletionAchieved(habit);
+      expect(result.$1, true);
+      expect(result.$2, 2);
+    });
+
+    test('IsHabitStreakCompletionAchieved returns false and streak length for streak < 2', () {
+      habit.myHabitCompletionDates.add(DateTime.now());
+      final result = viewModel.IsHabitStreakCompletionAchieved(habit);
+      expect(result.$1, false);
+      expect(result.$2, 1);
+    });
+
+    test('LiveTimeTracker triggers notifyListeners after midnight', () async {
+      // This test only checks that the method runs and does not throw.
+      // You may want to mock DateTime and ChangeNotifier for more advanced testing.
+      expect(() => viewModel.LiveTimeTracker(), returnsNormally);
+    });
+  });
   }
