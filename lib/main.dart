@@ -140,20 +140,24 @@ class MyHabitView extends StatelessWidget {
         });
   }
 
+  Widget CalculateHabitStreak(
+      BuildContext context, double mediaQueryWidth, Habits currentHabit) {
+    var streakLength = Provider.of<Habitviewmodel>(context, listen: true)
+        .IsHabitStreakCompletionAchieved(currentHabit);
 
-Widget CalculateHabitStreak(BuildContext context, double mediaQueryWidth, Habits currentHabit) 
-{
-                          return Text(
-                                      "${Provider.of<Habitviewmodel>(context, listen: true).IsHabitStreakCompletionAchieved(currentHabit).$2.toString()} days Streak..",
-                                      style: TextStyle(
-                                        fontSize: mediaQueryWidth *
-                                            0.05, // Responsive font size
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    );
-}
-
+    if (streakLength.$1 == false || streakLength.$2 < 2) {
+      return Text("");
+    } else {
+      return Text(
+        "${streakLength.$2.toString()} days Streak..",
+        style: TextStyle(
+          fontSize: mediaQueryWidth * 0.035, // Responsive font size
+          fontWeight: FontWeight.bold,
+          color: const Color.fromARGB(255, 179, 32, 22),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -214,26 +218,40 @@ Widget CalculateHabitStreak(BuildContext context, double mediaQueryWidth, Habits
                             child: Stack(
                               children: [
                                 // Habit Name (top-left)
-                                Row(
-                                  children: [
-                                    Positioned(
-                                      left: mediaQueryWidth * 0.04,
-                                      top: mediaQueryHeight * 0.02,
-                                      child: Text(
+                                Positioned(
+                                  left: mediaQueryWidth * 0.045,
+                                  top: mediaQueryHeight * 0.02,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
                                         currentHabit.habitName,
                                         style: TextStyle(
-                                          fontSize: mediaQueryWidth *
-                                              0.05, // Responsive font size
+                                          fontSize: mediaQueryWidth * 0.05,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black,
+                                          shadows: [
+                                            Shadow(
+                                              offset: Offset(1.0, 1.0),
+                                              blurRadius: 2.0,
+                                              color: const Color.fromARGB(
+                                                  255, 131, 180, 240),
+                                            ),
+                                          ],
                                         ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                    ),
-                                    SizedBox(width: 8.0),
-                                    Positioned(
-                                        child: CalculateHabitStreak(context, mediaQueryWidth, currentHabit))
-                                  ],
+                                      SizedBox(
+                                          height: mediaQueryHeight *
+                                              0.01), // Space between name and streak
+                                      CalculateHabitStreak(context,
+                                          mediaQueryWidth, currentHabit),
+                                    ],
+                                  ),
                                 ),
+
                                 // Popup Menu (top-right)
                                 Positioned(
                                   right: mediaQueryWidth * 0.02,
@@ -292,7 +310,8 @@ Widget CalculateHabitStreak(BuildContext context, double mediaQueryWidth, Habits
                                     },
                                   ),
                                 ),
-                                // Description (bottom-left)
+
+                                // Habit Description (bottom-left)
                                 Positioned(
                                   left: mediaQueryWidth * 0.04,
                                   bottom: mediaQueryHeight * 0.02,
@@ -530,14 +549,14 @@ Widget CalculateHabitStreak(BuildContext context, double mediaQueryWidth, Habits
           child: Icon(Icons.add),
         ));
   }
-  
+
 // class MyTextWidget extends StatelessWidget {
 //   const MyTextWidget({super.key, required this.habitName});
 //   final String habitName;
 
 //   void deleteHabit() {
 //     // Logic to delete the habit
-    
+
 //   }
 
 //   @override
@@ -546,22 +565,20 @@ Widget CalculateHabitStreak(BuildContext context, double mediaQueryWidth, Habits
 //         final theme = Theme.of(context);       // ← Add this.
 //         final style = theme.textTheme.displayMedium!.copyWith(
 //       color: theme.colorScheme.onPrimary,
-//     );    
+//     );
 //     print(habitName);
-//     return 
-//     Expanded(child: 
+//     return
+//     Expanded(child:
 //     Card(
 //       elevation: 20.0,
-//       color: theme.colorScheme.primary, // ← Use the theme color.  
+//       color: theme.colorScheme.primary, // ← Use the theme color.
 //       child: Padding(padding: const EdgeInsets.all(20.0),
 //       child: Text(habitName, style: style, textAlign: TextAlign.center, semanticsLabel: "${habitName} ",),
-      
+
 //       ),
 //     )
 //     );
-    
+
 //   }
 // }
-
-
 }
