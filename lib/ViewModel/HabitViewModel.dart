@@ -204,7 +204,9 @@ class Habitviewmodel extends ChangeNotifier
       for(var habit in myHabits)
       {
         habit.GetTodaysHabitCompletionCertificate();
+        //GetHabitStreakLengthAndStreakCompletionCertificate(habit);
       }
+      //notifyListeners to update UI, it will update all the listeners at main.dart and builds the respective widgets.
       notifyListeners();
     }
     await Future.delayed(Duration(seconds: 15));
@@ -212,7 +214,7 @@ class Habitviewmodel extends ChangeNotifier
     
   }
 
-  (bool, int) IsHabitStreakCompletionAchieved(Habits habit)
+  (bool, int) GetHabitStreakLengthAndStreakCompletionCertificate(Habits habit)
   {
   
     if(habit.habitName.isEmpty)
@@ -221,17 +223,17 @@ class Habitviewmodel extends ChangeNotifier
         return (false, 0);
     }
 
-    if(habit.myHabitCompletionDates.length >= 2)
+    if(habit.HabitCompletionDates().length >= 2)
     {
       print("IsHabitStreakCompletionAchieved called for habit: ${habit.habitName} with Uid: ${habit.habitUId}"  );
-      return (true, habit.myHabitCompletionDates.length);
+      return (true, habit.HabitCompletionDates().length);
     }
 
     print("IsHabitStreakCompletionAchieved: habitIndex: habit: ${habit} with Uid: ${habit.habitUId} has less than 2 completion dates"  );
-    return (false, habit.myHabitCompletionDates.length);
+    return (false, habit.HabitCompletionDates().length);
   }
 
-  (bool, Widget) GenerateStreakCalendarView(Habits habit)
+  (bool, Widget) GenerateStreakCalendarViewWidget(Habits habit, MediaQueryData mediaQuery, Color? colorForStreakDays)
   {
     if(habit.habitName.isEmpty)
     {
@@ -246,7 +248,7 @@ class Habitviewmodel extends ChangeNotifier
       return (false, Container());
     }
 
-    return (true, myHabits[habitIndex].GenerateStreakCalendarView());
+    return (true, myHabits[habitIndex].GenerateStreakCalendarViewWidget(mediaQuery, colorForStreakDays));
 
   }
 

@@ -159,7 +159,7 @@ class HabitViewModel_test extends Habitviewmodel {
     });
 
     test('IsHabitStreakCompletionAchieved returns false and 0 for empty streak', () {
-      final result = viewModel.IsHabitStreakCompletionAchieved(habit);
+      final result = viewModel.GetHabitStreakLengthAndStreakCompletionCertificate(habit);
       expect(result.$1, false);
       expect(result.$2, 0);
     });
@@ -169,14 +169,14 @@ class HabitViewModel_test extends Habitviewmodel {
         DateTime.now().subtract(Duration(days: 2)),
         DateTime.now().subtract(Duration(days: 1)),
       ]);
-      final result = viewModel.IsHabitStreakCompletionAchieved(habit);
+      final result = viewModel.GetHabitStreakLengthAndStreakCompletionCertificate(habit);
       expect(result.$1, true);
       expect(result.$2, 2);
     });
 
     test('IsHabitStreakCompletionAchieved returns false and streak length for streak < 2', () {
       habit.myHabitCompletionDates.add(DateTime.now());
-      final result = viewModel.IsHabitStreakCompletionAchieved(habit);
+      final result = viewModel.GetHabitStreakLengthAndStreakCompletionCertificate(habit);
       expect(result.$1, false);
       expect(result.$2, 1);
     });

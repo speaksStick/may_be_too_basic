@@ -141,7 +141,7 @@ class MyHabitView extends StatelessWidget {
   Widget CalculateHabitStreak(
       BuildContext context, double mediaQueryWidth, Habits currentHabit) {
     var streakLength = Provider.of<Habitviewmodel>(context, listen: true)
-        .IsHabitStreakCompletionAchieved(currentHabit);
+        .GetHabitStreakLengthAndStreakCompletionCertificate(currentHabit);
 
     if (streakLength.$1 == false || streakLength.$2 < 2) {
       return Text("");
@@ -164,6 +164,7 @@ class MyHabitView extends StatelessWidget {
     final isLandscape = mediaQuery.orientation == Orientation.landscape;
     final mediaQueryWidth = mediaQuery.size.width;
     final mediaQueryHeight = mediaQuery.size.height;
+    final colorForStreakDays = Color.fromARGB(255, 229, 116, 64);
 
     print("Current habits length: ${habits.length}");
     print("Current habits: ${habits.toString()}");
@@ -221,25 +222,35 @@ class MyHabitView extends StatelessWidget {
                                           Navigator.of(context).pop(),
                                     ),
 
-                                    TextButton(onPressed: ()
+                                    TextButton(
+                                    
+                                      onPressed: ()
                                     {
                                       showDialog(context: context, builder: (BuildContext buildContext){
                                         return AlertDialog(
                                           title: Text("Streak Calendar"),
-                                          content: Expanded(
-                                            child: Container(
-                                              color: const Color.fromARGB(179, 174, 227, 231),
-                                              child: SizedBox(
-                                                  width: double.maxFinite,
-                                                  child: Provider.of<Habitviewmodel>(context, listen: false).GenerateStreakCalendarView(currentHabit).$2),
-                                            ),
+                                          content: Container(
+                                            color: const Color.fromARGB(179, 174, 227, 231),
+                                            child: SizedBox(
+                                                width: double.maxFinite,
+                                                height: mediaQueryHeight * 0.5,
+                                                child: Provider.of<Habitviewmodel>(context, listen: false).GenerateStreakCalendarViewWidget(currentHabit, mediaQuery, colorForStreakDays).$2
+                                                ),
                                           ),
                                           actions: [
-                                            TextButton(
-                                              child: Text("Close"),
-                                              onPressed: () => Navigator.of(context).pop(),
+                                            Row(
+                                              children: [
+                                                Icon(Icons.circle, color: colorForStreakDays,),
+                                                Text("Streak days"),
+                                                Padding(padding:  EdgeInsets.symmetric(horizontal: mediaQueryWidth * 0.12)),
+                                                TextButton(
+                                                  child: Text("Close"),
+                                                  onPressed: () => Navigator.of(context).pop(),
+                                                ),
+                                              ],
                                             ),
-                                          ]
+                                          ],
+                                          
                                         );
                                       });
                                     }, child: Text("Streak Calendar"))
@@ -258,6 +269,7 @@ class MyHabitView extends StatelessWidget {
                                 mediaQueryHeight * 0.15, // Responsive height
                             child: Stack(
                               children: [
+
                                 // Habit Name (top-left)
                                 Positioned(
                                   left: mediaQueryWidth * 0.045,
@@ -372,7 +384,8 @@ class MyHabitView extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                // Status (bottom-right)
+
+                                // Habit status (bottom-right)
                                 Positioned(
                                   right: mediaQueryWidth * 0.02,
                                   bottom: mediaQueryHeight * 0.02,
