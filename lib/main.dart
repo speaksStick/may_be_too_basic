@@ -1,5 +1,3 @@
-import 'dart:math';
-import 'package:flutter/rendering.dart';
 import 'package:may_be_too_basic/Enums/HabitAttribute.dart';
 import 'package:may_be_too_basic/Models/Habits.dart';
 import 'package:provider/provider.dart';
@@ -143,7 +141,7 @@ class MyHabitView extends StatelessWidget {
   Widget CalculateHabitStreak(
       BuildContext context, double mediaQueryWidth, Habits currentHabit) {
     var streakLength = Provider.of<Habitviewmodel>(context, listen: true)
-        .IsHabitStreakCompletionAchieved(currentHabit);
+        .GetHabitStreakLengthAndStreakCompletionCertificate(currentHabit);
 
     if (streakLength.$1 == false || streakLength.$2 < 2) {
       return Text("");
@@ -166,6 +164,7 @@ class MyHabitView extends StatelessWidget {
     final isLandscape = mediaQuery.orientation == Orientation.landscape;
     final mediaQueryWidth = mediaQuery.size.width;
     final mediaQueryHeight = mediaQuery.size.height;
+    final colorForStreakDays = Color.fromARGB(255, 229, 116, 64);
 
     print("Current habits length: ${habits.length}");
     print("Current habits: ${habits.toString()}");
@@ -173,6 +172,25 @@ class MyHabitView extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: Center(child: new Text("...")),
+          actions: [
+            Positioned(
+              left: mediaQueryWidth * 0.04,
+              child: PopupMenuButton(
+                icon: Icon(Icons.menu),
+                onSelected: (value) {
+                  // Handle menu item selection if needed
+                  print("Selected hambergermenu item: $value");
+                },
+                itemBuilder: (context) {
+                  return [
+                    PopupMenuItem(
+                      child: Text('XX NOT IMPLEMENTED XX'),
+                    ),
+                  ];
+                },
+              ),
+            )
+          ],
         ),
         body: Row(children: [
           Expanded(
@@ -180,8 +198,9 @@ class MyHabitView extends StatelessWidget {
                   itemCount: habits.length,
                   itemBuilder: (context, index) {
                     final currentHabit = habits[index];
-                    print(
-                        "current habit to display: " + currentHabit.habitName);
+                    print("current habit to display: " + currentHabit.habitName);
+
+                    //GestureDetector to detect taps on the card    
                     return GestureDetector(
                       onTap: () {
                         print("Tapped on ${currentHabit.habitName}");
@@ -202,6 +221,39 @@ class MyHabitView extends StatelessWidget {
                                       onPressed: () =>
                                           Navigator.of(context).pop(),
                                     ),
+
+                                    TextButton(
+                                    
+                                      onPressed: ()
+                                    {
+                                      showDialog(context: context, builder: (BuildContext buildContext){
+                                        return AlertDialog(
+                                          title: Text("Streak Calendar"),
+                                          content: Container(
+                                            color: const Color.fromARGB(179, 174, 227, 231),
+                                            child: SizedBox(
+                                                width: double.maxFinite,
+                                                height: mediaQueryHeight * 0.5,
+                                                child: Provider.of<Habitviewmodel>(context, listen: false).GenerateStreakCalendarViewWidget(currentHabit, mediaQuery, colorForStreakDays).$2
+                                                ),
+                                          ),
+                                          actions: [
+                                            Row(
+                                              children: [
+                                                Icon(Icons.circle, color: colorForStreakDays,),
+                                                Text("Streak days"),
+                                                Padding(padding:  EdgeInsets.symmetric(horizontal: mediaQueryWidth * 0.12)),
+                                                TextButton(
+                                                  child: Text("Close"),
+                                                  onPressed: () => Navigator.of(context).pop(),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                          
+                                        );
+                                      });
+                                    }, child: Text("Streak Calendar"))
                                   ]);
                             });
                       },
@@ -217,6 +269,7 @@ class MyHabitView extends StatelessWidget {
                                 mediaQueryHeight * 0.15, // Responsive height
                             child: Stack(
                               children: [
+
                                 // Habit Name (top-left)
                                 Positioned(
                                   left: mediaQueryWidth * 0.045,
@@ -331,7 +384,8 @@ class MyHabitView extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                // Status (bottom-right)
+
+                                // Habit status (bottom-right)
                                 Positioned(
                                   right: mediaQueryWidth * 0.02,
                                   bottom: mediaQueryHeight * 0.02,

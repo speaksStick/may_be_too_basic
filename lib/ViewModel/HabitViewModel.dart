@@ -171,6 +171,7 @@ class Habitviewmodel extends ChangeNotifier
 
   Color GetHabitColor(Habits habit)
   {
+    //ToDo: Change default color based on gender preference
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
         print("habit is null or habit name is null or empty, cannot get habit color");
@@ -203,7 +204,9 @@ class Habitviewmodel extends ChangeNotifier
       for(var habit in myHabits)
       {
         habit.GetTodaysHabitCompletionCertificate();
+        //GetHabitStreakLengthAndStreakCompletionCertificate(habit);
       }
+      //notifyListeners to update UI, it will update all the listeners at main.dart and builds the respective widgets.
       notifyListeners();
     }
     await Future.delayed(Duration(seconds: 15));
@@ -211,7 +214,7 @@ class Habitviewmodel extends ChangeNotifier
     
   }
 
-  (bool, int) IsHabitStreakCompletionAchieved(Habits habit)
+  (bool, int) GetHabitStreakLengthAndStreakCompletionCertificate(Habits habit)
   {
   
     if(habit.habitName.isEmpty)
@@ -220,13 +223,33 @@ class Habitviewmodel extends ChangeNotifier
         return (false, 0);
     }
 
-    if(habit.myHabitCompletionDates.length >= 2)
+    if(habit.HabitCompletionDates().length >= 2)
     {
       print("IsHabitStreakCompletionAchieved called for habit: ${habit.habitName} with Uid: ${habit.habitUId}"  );
-      return (true, habit.myHabitCompletionDates.length);
+      return (true, habit.HabitCompletionDates().length);
     }
 
     print("IsHabitStreakCompletionAchieved: habitIndex: habit: ${habit} with Uid: ${habit.habitUId} has less than 2 completion dates"  );
-    return (false, habit.myHabitCompletionDates.length);
+    return (false, habit.HabitCompletionDates().length);
   }
+
+  (bool, Widget) GenerateStreakCalendarViewWidget(Habits habit, MediaQueryData mediaQuery, Color? colorForStreakDays)
+  {
+    if(habit.habitName.isEmpty)
+    {
+        print("habit is null or habit name is null or empty,  cannot generate streak calendar view");
+        return (false, Container());
+    }
+    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
+
+    if(habitIndex == -1)
+    {
+      print("Habit not found in the list, cannot generate streak calendar view");
+      return (false, Container());
+    }
+
+    return (true, myHabits[habitIndex].GenerateStreakCalendarViewWidget(mediaQuery, colorForStreakDays));
+
+  }
+
 }
