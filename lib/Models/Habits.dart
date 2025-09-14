@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:streak_calendar/streak_calendar.dart';
 import 'package:uuid/uuid.dart';
 
 class Habits {
@@ -112,5 +113,78 @@ class Habits {
     }
     print("Habit completion date $myHabitCompletionDateTime is not after today's date $dateTimeToday");
     return false;
+  }
+
+  Widget GenerateStreakCalendarView() 
+  {
+    return Center(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row
+        (
+          children: 
+          [
+            Text("${StreakStringBuilder()}",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.blueAccent,
+          ),
+        ),
+        Icon( Icons.star_border_purple500,
+          color: const Color.fromARGB(255, 207, 25, 70),
+        ),
+          ],
+        )
+        
+        ,SizedBox(height: 12),
+        Container(
+          child: CleanCalendar(
+            //ToDo: Need to provide the week view and month view toggle button
+            datePickerCalendarView: DatePickerCalendarView.monthView ,
+            streakDatesProperties: DatesProperties
+            (
+                  datesDecoration: DatesDecoration(
+                datesBackgroundColor:
+                    Color.fromARGB(255, 229, 116, 64), // Light blue background for streak dates
+
+                /// - datesTextColor, changes the dates text color.
+                datesTextColor:
+                    Colors.white, // White text color for streak dates
+
+                ///datesTextStyle, changes the dates text style.
+                datesTextStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+
+                //   /// - datesBorderColor, changes the dates border color.
+                datesBorderColor: Colors.blueGrey,
+
+                //   /// - datesBorderRadius, changes the dates border radius.
+                datesBorderRadius: 8.0,
+              )),
+              enableDenseSplashForDates: true,
+              datesForStreaks: [...myHabitCompletionDates],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String StreakStringBuilder()
+  {
+    if(myHabitCompletionDates.isEmpty){
+      return "";
+    }
+    if(myHabitCompletionDates.length == 1)
+    {
+      return "1 day streak";
+    }
+    else
+    {
+      return "${myHabitCompletionDates.length} days streak";
+    }
   }
 }

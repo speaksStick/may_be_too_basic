@@ -1,5 +1,3 @@
-import 'dart:math';
-import 'package:flutter/rendering.dart';
 import 'package:may_be_too_basic/Enums/HabitAttribute.dart';
 import 'package:may_be_too_basic/Models/Habits.dart';
 import 'package:provider/provider.dart';
@@ -173,6 +171,25 @@ class MyHabitView extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: Center(child: new Text("...")),
+          actions: [
+            Positioned(
+              left: mediaQueryWidth * 0.04,
+              child: PopupMenuButton(
+                icon: Icon(Icons.menu),
+                onSelected: (value) {
+                  // Handle menu item selection if needed
+                  print("Selected hambergermenu item: $value");
+                },
+                itemBuilder: (context) {
+                  return [
+                    PopupMenuItem(
+                      child: Text('XX NOT IMPLEMENTED XX'),
+                    ),
+                  ];
+                },
+              ),
+            )
+          ],
         ),
         body: Row(children: [
           Expanded(
@@ -180,8 +197,9 @@ class MyHabitView extends StatelessWidget {
                   itemCount: habits.length,
                   itemBuilder: (context, index) {
                     final currentHabit = habits[index];
-                    print(
-                        "current habit to display: " + currentHabit.habitName);
+                    print("current habit to display: " + currentHabit.habitName);
+
+                    //GestureDetector to detect taps on the card    
                     return GestureDetector(
                       onTap: () {
                         print("Tapped on ${currentHabit.habitName}");
@@ -202,6 +220,29 @@ class MyHabitView extends StatelessWidget {
                                       onPressed: () =>
                                           Navigator.of(context).pop(),
                                     ),
+
+                                    TextButton(onPressed: ()
+                                    {
+                                      showDialog(context: context, builder: (BuildContext buildContext){
+                                        return AlertDialog(
+                                          title: Text("Streak Calendar"),
+                                          content: Expanded(
+                                            child: Container(
+                                              color: const Color.fromARGB(179, 174, 227, 231),
+                                              child: SizedBox(
+                                                  width: double.maxFinite,
+                                                  child: Provider.of<Habitviewmodel>(context, listen: false).GenerateStreakCalendarView(currentHabit).$2),
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              child: Text("Close"),
+                                              onPressed: () => Navigator.of(context).pop(),
+                                            ),
+                                          ]
+                                        );
+                                      });
+                                    }, child: Text("Streak Calendar"))
                                   ]);
                             });
                       },

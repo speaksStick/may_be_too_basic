@@ -171,6 +171,7 @@ class Habitviewmodel extends ChangeNotifier
 
   Color GetHabitColor(Habits habit)
   {
+    //ToDo: Change default color based on gender preference
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
         print("habit is null or habit name is null or empty, cannot get habit color");
@@ -229,4 +230,24 @@ class Habitviewmodel extends ChangeNotifier
     print("IsHabitStreakCompletionAchieved: habitIndex: habit: ${habit} with Uid: ${habit.habitUId} has less than 2 completion dates"  );
     return (false, habit.myHabitCompletionDates.length);
   }
+
+  (bool, Widget) GenerateStreakCalendarView(Habits habit)
+  {
+    if(habit.habitName.isEmpty)
+    {
+        print("habit is null or habit name is null or empty,  cannot generate streak calendar view");
+        return (false, Container());
+    }
+    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
+
+    if(habitIndex == -1)
+    {
+      print("Habit not found in the list, cannot generate streak calendar view");
+      return (false, Container());
+    }
+
+    return (true, myHabits[habitIndex].GenerateStreakCalendarView());
+
+  }
+
 }
