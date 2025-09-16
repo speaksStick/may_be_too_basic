@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:streak_calendar/streak_calendar.dart';
 import 'package:uuid/uuid.dart';
 
-class Habits {
+class HabitsModel {
   //Member variables
   String habitName;
   String myHabitDescription = "";
@@ -21,7 +21,7 @@ class Habits {
   List<DateTime> HabitCompletionDates() => myHabitCompletionDates;
   List<DateTime> TotalHabitCompletionDatesForStreakCalendar() => myTotalHabitCompletionDatesForStreakCalendar;
 
-  Habits({required this.habitName});
+  HabitsModel({required this.habitName});
 
   set setHabitCompletionDateTime(DateTime dateTime) {
     if (dateTime == null) {
@@ -178,9 +178,44 @@ class Habits {
       return "";
     }
     if (myHabitCompletionDates.length == 1) {
-      return "  1 day streak 🔥\n" "   Longest streak ";
+      return "  1 day streak 🔥\n" " Longest streak days:  ${GetLongestStreakLength(myTotalHabitCompletionDatesForStreakCalendar)}";
     } else {
-      return "  ${myHabitCompletionDates.length} days streak 🔥\n" "   Longest streak";
+      return " ${myHabitCompletionDates.length} days streak 🔥\n" " Longest streak days:  ${GetLongestStreakLength(myTotalHabitCompletionDatesForStreakCalendar)}";
     }
+  }
+
+  int GetLongestStreakLength(List<DateTime> totalHabitCompletionDatesForStreakCalendar) {
+    
+    int longestStreakLength = 0;
+    var streakRestart = true;
+    List<int> streakLengthList = List<int>.empty(growable: true);
+    DateTime? expectedNextDayDate = null;
+    for(int streakDates = 0; streakDates < totalHabitCompletionDatesForStreakCalendar.length; streakDates++)
+    {
+      final currentDayDate = totalHabitCompletionDatesForStreakCalendar[streakDates];
+      if((expectedNextDayDate != null && currentDayDate == expectedNextDayDate) || streakDates == 0 || streakRestart == true)
+      {
+                longestStreakLength++;
+                print("Current streak length increased: $longestStreakLength");
+                expectedNextDayDate = currentDayDate.add(Duration(days: 1));
+                streakRestart = false;
+      }
+      else
+      {
+        streakLengthList.add(longestStreakLength);
+        print("Streak broken, current streak length: $longestStreakLength");
+        longestStreakLength = 0;
+        //expectedNextDayDate = currentDayDate.add(Duration(days: 1));
+        expectedNextDayDate = null;
+        streakRestart = true;
+        streakDates--;
+      }
+
+    }
+    streakLengthList.add(longestStreakLength);
+    streakLengthList.sort();
+    var finalLongestStreakLength = streakLengthList.isNotEmpty ? streakLengthList.last : 0;
+    print("###################Longest streak calculated as: ${finalLongestStreakLength}");
+    return finalLongestStreakLength;  
   }
 }
