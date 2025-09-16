@@ -1,0 +1,23 @@
+
+{
+    "hello": "hellow world",
+    "mayBeTooBasic": "May be too basic for you!",
+    "addHabit": "Add a Habit",
+    "habitName": "Habit Name",
+    "cancel": "Cancel",
+    "save": "Save",
+    "habitDescription":"Habit description",
+    "pickColor": "Pick a color!",
+    "streakCalendar": "Streak Calendar",
+    "streakDays": "Streak days",
+    "delete": "Delete",
+    "edit": "Edit",
+    "changeColor": "Change Color",
+    "markDone": "Mark as Done",
+    "todayGoalAchieved": "Today's Goal achieved",
+    "yetToAchieveTodaysGoal": "Yet to achieve today's goal",
+    "daysStreak": "days Streak..",
+    "editDescriptionFor": "Edit Description for",
+    "dayStreak": "day streak",
+    "longestStreakDays": "Longest streak days:"
+}

@@ -8,6 +8,10 @@ class Habitviewmodel extends ChangeNotifier
 {
 
   final List<HabitsModel> myHabits = [];
+  final List<Locale> supportedLocales = [Locale('en'), Locale('kn'), Locale('hi')];
+  Locale preferredLocale = Locale('en');
+
+  Locale get GetPreferredLocale => preferredLocale;
 
   bool AddHabit(String habitName)
   {
@@ -250,6 +254,23 @@ class Habitviewmodel extends ChangeNotifier
 
     return (true, myHabits[habitIndex].GenerateStreakCalendarViewWidget(mediaQuery, colorForStreakDays));
 
+  }
+
+  void SetPreferredLocale(Locale locale)
+  {
+    if(locale == null)
+    {
+        print("locale is null, cannot set preferred locale");
+        return;
+    }
+    if(!supportedLocales.contains(locale))
+    {
+        print("locale $locale is not supported, cannot set preferred locale");
+        return;
+    }
+    print("Setting preferred locale to $locale");
+    preferredLocale = locale;
+    notifyListeners();
   }
 
 }

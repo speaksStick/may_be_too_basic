@@ -1,0 +1,22 @@
+{
+    "hello": "हैलो वर्ल्ड",
+    "mayBeTooBasic": "हो सकता है कि यह आपके लिए बहुत बुनियादी हो!",
+    "addHabit": "एक आदत जोड़ें",
+    "habitName": "आदत का नाम",
+    "cancel": "रद्द करना",
+    "save": "बचाना",
+    "habitDescription":"आदत विवरण",
+    "pickColor": "एक रंग चुनें!",
+    "streakCalendar": "स्ट्रीक कैलेंडर",
+    "streakDays": "लकीर के फकीर दिन",
+    "delete": "मिटाना",
+    "edit": "संपादन करना",
+    "changeColor": "रंग बदलें",
+    "markDone": "पूर्ण हुआ चिह्नित करें",
+    "todayGoalAchieved": "आज का लक्ष्य प्राप्त हुआ",
+    "yetToAchieveTodaysGoal": "आज का लक्ष्य अभी हासिल करना बाकी है",
+    "daysStreak": "दिनों की लकीर..",
+    "editDescriptionFor": "के लिए विवरण संपादित करें",
+    "dayStreak": "दिन की लकीर",
+    "longestStreakDays": "सबसे लम्बी लकीर वाले दिन:"
+}
