@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:streak_calendar/streak_calendar.dart';
 import 'package:uuid/uuid.dart';
 
@@ -133,14 +134,20 @@ class HabitsModel {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            "${_StreakStringBuilder()}",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.blueAccent,
+          Shimmer.fromColors(
+            child: Text(
+              "${_StreakStringBuilder()}",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
+              ),
             ),
+            baseColor: const Color.fromARGB(255, 198, 136, 37),
+            highlightColor: Colors.lightBlueAccent,
+            period: Duration(seconds: 2),
           ),
+          
           SizedBox(height: 12),
           Container(
             child: SizedBox(
