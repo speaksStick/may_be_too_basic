@@ -1,5 +1,5 @@
 import 'package:may_be_too_basic/Enums/HabitAttribute.dart';
-import 'package:may_be_too_basic/Models/Habits.dart';
+import 'package:may_be_too_basic/Models/HabitsModel.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:may_be_too_basic/ViewModel/HabitViewModel.dart';
@@ -67,7 +67,7 @@ class MyHabitView extends StatelessWidget {
 
 //Requires the info of habit to edit, the attribute to edit, and the new value for that attribute
   void myUpdateHabitAttributes(BuildContext context, String dialogTitle,
-      Habits habit, HabitAttribute habitAttributeToEdit) {
+      HabitsModel habit, HabitAttribute habitAttributeToEdit) {
     final TextEditingController habitController = TextEditingController();
     var habitAttributeValue;
     showDialog(
@@ -109,7 +109,7 @@ class MyHabitView extends StatelessWidget {
     );
   }
 
-  void OnColorChangeIconPressed(BuildContext context, Habits habit) {
+  void OnColorChangeIconPressed(BuildContext context, HabitsModel habit) {
     Color pickerColor = habit.HabitColor(); // Default color
 
     void onColorChanged(Color color) {
@@ -139,7 +139,7 @@ class MyHabitView extends StatelessWidget {
   }
 
   Widget CalculateHabitStreak(
-      BuildContext context, double mediaQueryWidth, Habits currentHabit) {
+      BuildContext context, double mediaQueryWidth, HabitsModel currentHabit) {
     var streakLength = Provider.of<Habitviewmodel>(context, listen: true)
         .GetHabitStreakLengthAndStreakCompletionCertificate(currentHabit);
 
@@ -173,21 +173,23 @@ class MyHabitView extends StatelessWidget {
         appBar: AppBar(
           title: Center(child: new Text("...")),
           actions: [
-            Positioned(
-              left: mediaQueryWidth * 0.04,
-              child: PopupMenuButton(
-                icon: Icon(Icons.menu),
-                onSelected: (value) {
-                  // Handle menu item selection if needed
-                  print("Selected hambergermenu item: $value");
-                },
-                itemBuilder: (context) {
-                  return [
-                    PopupMenuItem(
-                      child: Text('XX NOT IMPLEMENTED XX'),
-                    ),
-                  ];
-                },
+            Expanded(
+              child: Positioned(
+                left: mediaQueryWidth * 0.04,
+                child: PopupMenuButton(
+                  icon: Icon(Icons.menu),
+                  onSelected: (value) {
+                    // Handle menu item selection if needed
+                    print("Selected hambergermenu item: $value");
+                  },
+                  itemBuilder: (context) {
+                    return [
+                      PopupMenuItem(
+                        child: Text('XX NOT IMPLEMENTED XX'),
+                      ),
+                    ];
+                  },
+                ),
               ),
             )
           ],
@@ -227,30 +229,34 @@ class MyHabitView extends StatelessWidget {
                                       onPressed: ()
                                     {
                                       showDialog(context: context, builder: (BuildContext buildContext){
-                                        return AlertDialog(
-                                          title: Text("Streak Calendar"),
-                                          content: Container(
-                                            color: const Color.fromARGB(179, 174, 227, 231),
-                                            child: SizedBox(
-                                                width: double.maxFinite,
-                                                height: mediaQueryHeight * 0.5,
-                                                child: Provider.of<Habitviewmodel>(context, listen: false).GenerateStreakCalendarViewWidget(currentHabit, mediaQuery, colorForStreakDays).$2
-                                                ),
-                                          ),
-                                          actions: [
-                                            Row(
-                                              children: [
-                                                Icon(Icons.circle, color: colorForStreakDays,),
-                                                Text("Streak days"),
-                                                Padding(padding:  EdgeInsets.symmetric(horizontal: mediaQueryWidth * 0.12)),
-                                                TextButton(
-                                                  child: Text("Close"),
-                                                  onPressed: () => Navigator.of(context).pop(),
-                                                ),
-                                              ],
+                                        //Use SingleChildScrollView to avoid overflow error when keyboard appears, 
+                                        //So, it can become scrollable
+                                        return SingleChildScrollView(
+                                          child: AlertDialog(
+                                            title: Text("Streak Calendar"),
+                                            content: Container(
+                                              color: const Color.fromARGB(179, 174, 227, 231),
+                                              child: SizedBox(
+                                                  width: double.maxFinite,
+                                                  height: mediaQueryHeight * 0.5,
+                                                  child: Provider.of<Habitviewmodel>(context, listen: false).GenerateStreakCalendarViewWidget(currentHabit, mediaQuery, colorForStreakDays).$2
+                                                  ),
                                             ),
-                                          ],
-                                          
+                                            actions: [
+                                              Row(
+                                                children: [
+                                                  Icon(Icons.circle, color: colorForStreakDays,),
+                                                  Text("Streak days"),
+                                                  Padding(padding:  EdgeInsets.symmetric(horizontal: mediaQueryWidth * 0.12)),
+                                                  TextButton(
+                                                    child: Text("Close"),
+                                                    onPressed: () => Navigator.of(context).pop(),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                            
+                                          ),
                                         );
                                       });
                                     }, child: Text("Streak Calendar"))

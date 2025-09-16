@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:may_be_too_basic/Models/Habits.dart';
+import 'package:may_be_too_basic/Models/HabitsModel.dart';
 import 'package:may_be_too_basic/ViewModel/HabitViewModel.dart';
   
 class HabitViewModel_test extends Habitviewmodel {
@@ -70,7 +70,7 @@ class HabitViewModel_test extends Habitviewmodel {
 
     test('removes habit when valid', () {
       final vm = HabitViewModel_test();
-      final habit = Habits(habitName: 'Read');
+      final habit = HabitsModel(habitName: 'Read');
       vm.myHabits.add(habit);
 
       final result = vm.RemoveHabit(habit);
@@ -84,7 +84,7 @@ class HabitViewModel_test extends Habitviewmodel {
 
     test('returns false when habit name is empty', () {
       final vm = HabitViewModel_test();
-      final habit = Habits(habitName: '');
+      final habit = HabitsModel(habitName: '');
       final result = vm.RemoveHabit(habit);
 
       expect(result, false);
@@ -94,7 +94,7 @@ class HabitViewModel_test extends Habitviewmodel {
 
     test('edits description when valid', () {
       final vm = HabitViewModel_test();
-      final habit = Habits(habitName: 'Run');
+      final habit = HabitsModel(habitName: 'Run');
       vm.myHabits.add(habit);
 
       final result = vm.EditHabitDescription(habit, 'Morning run');
@@ -106,7 +106,7 @@ class HabitViewModel_test extends Habitviewmodel {
 
     test('returns false when description is empty', () {
       final vm = HabitViewModel_test();
-      final habit = Habits(habitName: 'Run');
+      final habit = HabitsModel(habitName: 'Run');
       vm.myHabits.add(habit);
 
       final result = vm.EditHabitDescription(habit, '');
@@ -117,7 +117,7 @@ class HabitViewModel_test extends Habitviewmodel {
 
     test('returns false when habit not in list', () {
       final vm = HabitViewModel_test();
-      final habit = Habits(habitName: 'Run');
+      final habit = HabitsModel(habitName: 'Run');
 
       final result = vm.EditHabitDescription(habit, 'desc');
 
@@ -128,7 +128,7 @@ class HabitViewModel_test extends Habitviewmodel {
 
     test('edits color when valid', () {
       final vm = HabitViewModel_test();
-      final habit = Habits(habitName: 'Swim');
+      final habit = HabitsModel(habitName: 'Swim');
       vm.myHabits.add(habit);
 
       final result = vm.EditHabitColor(habit, Colors.blue);
@@ -140,7 +140,7 @@ class HabitViewModel_test extends Habitviewmodel {
 
     test('returns false when habit not in list', () {
       final vm = HabitViewModel_test();
-      final habit = Habits(habitName: 'Swim');
+      final habit = HabitsModel(habitName: 'Swim');
 
       final result = vm.EditHabitColor(habit, Colors.green);
 
@@ -151,11 +151,11 @@ class HabitViewModel_test extends Habitviewmodel {
     // ToDo: Need to refactor TimeTracker and write robust tests
      group('Habitviewmodel', () {
     late Habitviewmodel viewModel;
-    late Habits habit;
+    late HabitsModel habit;
 
     setUp(() {
       viewModel = Habitviewmodel();
-      habit = Habits(habitName: 'Test Habit');
+      habit = HabitsModel(habitName: 'Test Habit');
     });
 
     test('IsHabitStreakCompletionAchieved returns false and 0 for empty streak', () {

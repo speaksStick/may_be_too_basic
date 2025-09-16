@@ -2,12 +2,12 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:may_be_too_basic/Models/Habits.dart';
+import 'package:may_be_too_basic/Models/HabitsModel.dart';
  
 class Habitviewmodel extends ChangeNotifier
 {
 
-  final List<Habits> myHabits = [];
+  final List<HabitsModel> myHabits = [];
 
   bool AddHabit(String habitName)
   {
@@ -17,7 +17,7 @@ class Habitviewmodel extends ChangeNotifier
         print("Habit name is null or empty, cannot add into habit list");
         return false;
     }
-    var newHabit = Habits(habitName: habitName);
+    var newHabit = HabitsModel(habitName: habitName);
     if(myHabits.any((habit) => habit.habitName == habitName || newHabit.habitUId == habit.habitUId))
     {
         print("$newHabit already exists, cannot add into habit list");
@@ -31,7 +31,7 @@ class Habitviewmodel extends ChangeNotifier
     return true;
   }
 
-  bool RemoveHabit(Habits habit)
+  bool RemoveHabit(HabitsModel habit)
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
@@ -45,7 +45,7 @@ class Habitviewmodel extends ChangeNotifier
     return removeResult;
   }
 
-  bool EditHabitDescription(Habits habit, String newDescription)
+  bool EditHabitDescription(HabitsModel habit, String newDescription)
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
@@ -73,7 +73,7 @@ class Habitviewmodel extends ChangeNotifier
   }
 
 
-  bool EditHabitColor(Habits habit, Color newColor)
+  bool EditHabitColor(HabitsModel habit, Color newColor)
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
@@ -103,7 +103,7 @@ class Habitviewmodel extends ChangeNotifier
   }
 
 
-  bool GetTodaysHabitCompletionCertificate(Habits habit)
+  bool GetTodaysHabitCompletionCertificate(HabitsModel habit)
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
@@ -123,7 +123,7 @@ class Habitviewmodel extends ChangeNotifier
 
 
 
-  bool SetHabitCompletionDateTime(Habits habit, DateTime dateTime)
+  bool SetHabitCompletionDateTime(HabitsModel habit, DateTime dateTime)
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
@@ -150,7 +150,7 @@ class Habitviewmodel extends ChangeNotifier
     return true;
   }
 
-  String GeHabitDescription(Habits habit)
+  String GeHabitDescription(HabitsModel habit)
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
@@ -169,7 +169,7 @@ class Habitviewmodel extends ChangeNotifier
     return myHabits[habitIndex].HabitDescription();
   }
 
-  Color GetHabitColor(Habits habit)
+  Color GetHabitColor(HabitsModel habit)
   {
     //ToDo: Change default color based on gender preference
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
@@ -214,7 +214,7 @@ class Habitviewmodel extends ChangeNotifier
     
   }
 
-  (bool, int) GetHabitStreakLengthAndStreakCompletionCertificate(Habits habit)
+  (bool, int) GetHabitStreakLengthAndStreakCompletionCertificate(HabitsModel habit)
   {
   
     if(habit.habitName.isEmpty)
@@ -233,7 +233,7 @@ class Habitviewmodel extends ChangeNotifier
     return (false, habit.HabitCompletionDates().length);
   }
 
-  (bool, Widget) GenerateStreakCalendarViewWidget(Habits habit, MediaQueryData mediaQuery, Color? colorForStreakDays)
+  (bool, Widget) GenerateStreakCalendarViewWidget(HabitsModel habit, MediaQueryData mediaQuery, Color? colorForStreakDays)
   {
     if(habit.habitName.isEmpty)
     {
