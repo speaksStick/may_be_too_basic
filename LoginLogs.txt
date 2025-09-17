@@ -1,3 +1,8 @@
 05/08/2025:
 Created the basic app for changing the colour and created the apk using     flutter build apk --release
 Created all the backlog/ features in https://github.com/speaksStick/may_be_too_basic
+
+To generate the code for the intl package for lang localization:
+Create l10n under lib folder, create the .arb files in json format, add the supported locales
+to the MaterialWidget in the main.dart. Then create the appLocalizations.dart and other files 
+by running "flutter gen-l10n" in cmd.

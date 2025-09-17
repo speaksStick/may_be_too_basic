@@ -1,9 +1,11 @@
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:may_be_too_basic/Enums/HabitAttribute.dart';
 import 'package:may_be_too_basic/Models/HabitsModel.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:may_be_too_basic/ViewModel/HabitViewModel.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:may_be_too_basic/l10n/gen_l10n/app_localizations.dart';
 
 void main() {
   runApp(
@@ -19,9 +21,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: "May be too basic for you!",
-        color: Color.fromRGBO(22, 158, 140, 0),
-        home: MyHabitView());
+      title: AppLocalizations.of(context)?.mayBeTooBasic,
+      color: Color.fromRGBO(22, 158, 140, 0),
+      home: MyHabitView(),
+      supportedLocales: [
+        Locale('en'),
+        Locale('kn'),
+        Locale('hi'),
+      ],
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      locale: Provider.of<Habitviewmodel>(context, listen: true)
+          .GetPreferredLocale,
+    );
   }
 }
 
@@ -35,21 +51,21 @@ class MyHabitView extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Add a Habit"),
+          title: Text(AppLocalizations.of(context)!.addHabit),
           content: TextField(
             controller: habitController,
             decoration: InputDecoration(
-              labelText: "Habit Name",
+              labelText: AppLocalizations.of(context)!.habitName,
               border: OutlineInputBorder(),
             ),
           ),
           actions: [
             TextButton(
-              child: Text("Cancel"),
+              child: Text(AppLocalizations.of(context)!.cancel),
               onPressed: () => Navigator.of(context).pop(),
             ),
             ElevatedButton(
-              child: Text("Save"),
+              child: Text(AppLocalizations.of(context)!.save),
               onPressed: () {
                 if (habitController.text.isNotEmpty) {
                   habitName = habitController.text;
@@ -80,7 +96,7 @@ class MyHabitView extends StatelessWidget {
             child: TextField(
               controller: habitController,
               decoration: InputDecoration(
-                labelText: "Habit description",
+                labelText: AppLocalizations.of(context)!.habitDescription,
                 border: OutlineInputBorder(),
               ),
               maxLines: 10,
@@ -89,11 +105,11 @@ class MyHabitView extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              child: Text("Cancel"),
+              child: Text(AppLocalizations.of(context)!.cancel),
               onPressed: () => Navigator.of(context).pop(),
             ),
             ElevatedButton(
-              child: Text("Save"),
+              child: Text(AppLocalizations.of(context)!.save),
               onPressed: () {
                 if (habitController.text.isNotEmpty) {
                   habitAttributeValue = habitController.text;
@@ -123,7 +139,7 @@ class MyHabitView extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Pick a color!'),
+            title: Text(AppLocalizations.of(context)!.pickColor),
             content: SingleChildScrollView(
               child: ColorPicker(
                   pickerColor: pickerColor, onColorChanged: onColorChanged),
@@ -147,7 +163,7 @@ class MyHabitView extends StatelessWidget {
       return Text("");
     } else {
       return Text(
-        "${streakLength.$2.toString()} days Streak..",
+        "${streakLength.$2.toString()} ${AppLocalizations.of(context)!.streakDays}}",
         style: TextStyle(
           fontSize: mediaQueryWidth * 0.035, // Responsive font size
           fontWeight: FontWeight.bold,
@@ -171,27 +187,59 @@ class MyHabitView extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Center(child: new Text("...")),
+          title: Center(child: Text("...")),
           actions: [
-            Expanded(
-              child: Positioned(
-                left: mediaQueryWidth * 0.04,
-                child: PopupMenuButton(
-                  icon: Icon(Icons.menu),
-                  onSelected: (value) {
-                    // Handle menu item selection if needed
-                    print("Selected hambergermenu item: $value");
-                  },
-                  itemBuilder: (context) {
-                    return [
-                      PopupMenuItem(
-                        child: Text('XX NOT IMPLEMENTED XX'),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<Locale>(
+                  value: Provider.of<Habitviewmodel>(context, listen: true)
+                      .GetPreferredLocale,
+                  icon: Icon(Icons.language, color: Colors.white),
+                  dropdownColor: Colors.white,
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
+                  items: [
+                    DropdownMenuItem(
+                      value: Locale('en'),
+                      child: Row(
+                        children: [
+                          Icon(Icons.flag, color: const Color.fromARGB(255, 30, 31, 31)),
+                          SizedBox(width: 8),
+                          Text('English'),
+                        ],
                       ),
-                    ];
+                    ),
+                    DropdownMenuItem(
+                      value: Locale('kn'),
+                      child: Row(
+                        children: [
+                          Icon(Icons.flag, color: const Color.fromARGB(255, 41, 45, 41)),
+                          SizedBox(width: 8),
+                          Text('Kannada'),
+                        ],
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: Locale('hi'),
+                      child: Row(
+                        children: [
+                          Icon(Icons.flag, color: const Color.fromARGB(255, 32, 31, 30)),
+                          SizedBox(width: 8),
+                          Text('Hindi'),
+                        ],
+                      ),
+                    ),
+                  ],
+                  onChanged: (Locale? newLocale) {
+                    if (newLocale != null) {
+                      Provider.of<Habitviewmodel>(context, listen: false)
+                          .SetPreferredLocale(newLocale);
+                    }
                   },
                 ),
               ),
-            )
+            ),
           ],
         ),
         body: Row(children: [
@@ -200,9 +248,10 @@ class MyHabitView extends StatelessWidget {
                   itemCount: habits.length,
                   itemBuilder: (context, index) {
                     final currentHabit = habits[index];
-                    print("current habit to display: " + currentHabit.habitName);
+                    print(
+                        "current habit to display: " + currentHabit.habitName);
 
-                    //GestureDetector to detect taps on the card    
+                    //GestureDetector to detect taps on the card
                     return GestureDetector(
                       onTap: () {
                         print("Tapped on ${currentHabit.habitName}");
@@ -219,47 +268,76 @@ class MyHabitView extends StatelessWidget {
                                           style: TextStyle(fontSize: 15))),
                                   actions: [
                                     TextButton(
-                                      child: Text("Close"),
+                                      child: Text(AppLocalizations.of(context)!.cancel),
                                       onPressed: () =>
                                           Navigator.of(context).pop(),
                                     ),
-
                                     TextButton(
-                                    
-                                      onPressed: ()
-                                    {
-                                      showDialog(context: context, builder: (BuildContext buildContext){
-                                        //Use SingleChildScrollView to avoid overflow error when keyboard appears, 
-                                        //So, it can become scrollable
-                                        return SingleChildScrollView(
-                                          child: AlertDialog(
-                                            title: Text("Streak Calendar"),
-                                            content: Container(
-                                              color: const Color.fromARGB(179, 174, 227, 231),
-                                              child: SizedBox(
-                                                  width: double.maxFinite,
-                                                  height: mediaQueryHeight * 0.5,
-                                                  child: Provider.of<Habitviewmodel>(context, listen: false).GenerateStreakCalendarViewWidget(currentHabit, mediaQuery, colorForStreakDays).$2
+                                        onPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              builder:
+                                                  (BuildContext buildContext) {
+                                                //Use SingleChildScrollView to avoid overflow error when keyboard appears,
+                                                //So, it can become scrollable
+                                                return SingleChildScrollView(
+                                                  child: AlertDialog(
+                                                    title:
+                                                        Text(AppLocalizations.of(context)!.streakCalendar),
+                                                    content: Container(
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              179,
+                                                              174,
+                                                              227,
+                                                              231),
+                                                      child: SizedBox(
+                                                          width:
+                                                              double.maxFinite,
+                                                          height:
+                                                              mediaQueryHeight *
+                                                                  0.5,
+                                                          child: Provider.of<
+                                                                      Habitviewmodel>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .GenerateStreakCalendarViewWidget(
+                                                                  currentHabit,
+                                                                  mediaQuery,
+                                                                  colorForStreakDays)
+                                                              .$2),
+                                                    ),
+                                                    actions: [
+                                                      Row(
+                                                        children: [
+                                                          Icon(
+                                                            Icons.circle,
+                                                            color:
+                                                                colorForStreakDays,
+                                                          ),
+                                                          Text(AppLocalizations.of(context)!.streakDays),
+                                                          Padding(
+                                                              padding: EdgeInsets
+                                                                  .symmetric(
+                                                                      horizontal:
+                                                                          mediaQueryWidth *
+                                                                              0.06)),
+                                                          TextButton(
+                                                            child:
+                                                                Text(AppLocalizations.of(context)!.cancel),
+                                                            onPressed: () =>
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop(),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
                                                   ),
-                                            ),
-                                            actions: [
-                                              Row(
-                                                children: [
-                                                  Icon(Icons.circle, color: colorForStreakDays,),
-                                                  Text("Streak days"),
-                                                  Padding(padding:  EdgeInsets.symmetric(horizontal: mediaQueryWidth * 0.12)),
-                                                  TextButton(
-                                                    child: Text("Close"),
-                                                    onPressed: () => Navigator.of(context).pop(),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                            
-                                          ),
-                                        );
-                                      });
-                                    }, child: Text("Streak Calendar"))
+                                                );
+                                              });
+                                        },
+                                        child: Text(AppLocalizations.of(context)!.streakCalendar))
                                   ]);
                             });
                       },
@@ -275,7 +353,6 @@ class MyHabitView extends StatelessWidget {
                                 mediaQueryHeight * 0.15, // Responsive height
                             child: Stack(
                               children: [
-
                                 // Habit Name (top-left)
                                 Positioned(
                                   left: mediaQueryWidth * 0.045,
@@ -329,7 +406,7 @@ class MyHabitView extends StatelessWidget {
                                         case 'edit':
                                           myUpdateHabitAttributes(
                                               context,
-                                              "Edit Description for ${currentHabit.habitName}",
+                                              "${AppLocalizations.of(context)!.editDescriptionFor} ${currentHabit.habitName}",
                                               currentHabit,
                                               HabitAttribute.HabitDescription);
                                           break;
@@ -351,19 +428,19 @@ class MyHabitView extends StatelessWidget {
                                       return [
                                         PopupMenuItem(
                                           value: 'delete',
-                                          child: Text('Delete'),
+                                          child: Text(AppLocalizations.of(context)!.delete),
                                         ),
                                         PopupMenuItem(
                                           value: 'edit',
-                                          child: Text('Edit'),
+                                          child: Text(AppLocalizations.of(context)!.edit),
                                         ),
                                         PopupMenuItem(
                                           value: 'color',
-                                          child: Text('Change Color'),
+                                          child: Text(AppLocalizations.of(context)!.changeColor),
                                         ),
                                         PopupMenuItem(
                                           value: 'mark_done',
-                                          child: Text("Mark as Done"),
+                                          child: Text(AppLocalizations.of(context)!.markDone),
                                         ),
                                       ];
                                     },
@@ -414,8 +491,8 @@ class MyHabitView extends StatelessWidget {
                                               .watch<Habitviewmodel>()
                                               .GetTodaysHabitCompletionCertificate(
                                                   currentHabit)
-                                          ? "Today's Goal achieved"
-                                          : "Yet to achieve today's goal",
+                                          ? AppLocalizations.of(context)!.todayGoalAchieved
+                                          : AppLocalizations.of(context)!.yetToAchieveTodaysGoal,
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
@@ -605,7 +682,7 @@ class MyHabitView extends StatelessWidget {
           onPressed: () {
             myShowAddHabitForm(context);
           },
-          tooltip: "Add a Habit!",
+          tooltip: AppLocalizations.of(context)!.addHabit,
           child: Icon(Icons.add),
         ));
   }

@@ -1,0 +1,22 @@
+{
+    "hello": "ನಮಸ್ಕಾರ ಜಗತ್ತು",
+    "mayBeTooBasic": "ನಿಮಗೆ ತುಂಬಾ ಮೂಲಭೂತವಾಗಿರಬಹುದು!",
+    "addHabit": "ಒಂದು ಅಭ್ಯಾಸ ಸೇರಿಸಿ",
+    "habitName": "ಅಭ್ಯಾಸದ ಹೆಸರು",
+    "cancel": "ರದ್ದುಮಾಡು",
+    "save": "ಉಳಿಸಿ",
+    "habitDescription":"ಅಭ್ಯಾಸ ವಿವರಣೆ",
+    "pickColor": "ಬಣ್ಣವನ್ನು ಆರಿಸಿ!",
+    "streakCalendar": "ಸ್ಟ್ರೀಕ್ ಕ್ಯಾಲೆಂಡರ್",
+    "streakDays": "ಸ್ಟ್ರೀಕ್ ದಿನಗಳು",
+    "delete": "ಅಳಿಸಿ",
+    "edit": "ಸಂಪಾದಿಸು",
+    "changeColor": "ಬಣ್ಣವನ್ನು ಬದಲಾಯಿಸಿ",
+    "markDone": "ಮುಗಿದಿದೆ ಎಂದು ಗುರುತಿಸಿ",
+    "todayGoalAchieved": "ಇಂದಿನ ಗುರಿ ಸಾಧಿಸಲಾಗಿದೆ",
+    "yetToAchieveTodaysGoal": "ಇಂದಿನ ಗುರಿಯನ್ನು ಇನ್ನೂ ಸಾಧಿಸಬೇಕಾಗಿದೆ",
+    "daysStreak": "ದಿನಗಳ ಸಾಲು..",
+    "editDescriptionFor": "ಇದಕ್ಕಾಗಿ ವಿವರಣೆಯನ್ನು ಸಂಪಾದಿಸಿ",
+    "dayStreak": "ದಿನದ ಗೆರೆ",
+    "longestStreakDays": "ಅತಿ ಉದ್ದದ ಸ್ಟ್ರೀಕ್ ದಿನಗಳು:"
+    }
