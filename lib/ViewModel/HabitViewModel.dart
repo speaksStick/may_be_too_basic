@@ -29,7 +29,7 @@ class Habitviewmodel extends ChangeNotifier
     }
     myHabits.add( newHabit);
     print("Live time tracker initiated");
-    LiveTimeTracker();
+    LiveTimeTracker(DateTime.timestamp());
     print("Successfully added ${newHabit.habitName} into habit list");
     notifyListeners();
     return true;
@@ -194,11 +194,10 @@ class Habitviewmodel extends ChangeNotifier
     return myHabits[habitIndex].HabitColor();
   }
 
-  void LiveTimeTracker () async
+  void LiveTimeTracker (DateTime timeNow) async
   {
     while(true)
     {
-     var timeNow = DateTime.timestamp();
      var midnight = DateTime(timeNow.year, timeNow.month, timeNow.day).add(Duration(days: 1));
     print(  "================LiveTimeTracker called at $timeNow======================="  );
     // Check if current time is after midnight
