@@ -15,21 +15,32 @@ class HabitViewModel_test extends Habitviewmodel {
     super.notifyListeners();
   }
 }
+
+  //Branch coverage wold be less, need to cover the negative usecases.
   void main() {
-    test("AddHabit_ValidHabitName_HabitIsAddedTomyHabitsList", () {
-      // Arrange
-      var habitViewModel = HabitViewModel_test();
+  group('Habitviewmodel', () {
+    late HabitViewModel_test myHabitViewModel;
+    late HabitsModel myHabit;
+
+    //Setup before each test
+    setUp(() {
+      myHabitViewModel = new HabitViewModel_test();
+      myHabit = HabitsModel(habitName: 'Test Habit');
+      myHabitViewModel.myHabits.clear();
+      myHabitViewModel.myHabits.add(myHabit);
+      
+    });
+
+    test('AddHabit adds a habit', () {
       var habitName = "Exercise";
 
-      // Act
-      var result = habitViewModel.AddHabit(habitName);
-
-      // Assert
+      bool result = myHabitViewModel.AddHabit(habitName);
+      
       expect(result, true);
-      expect(habitViewModel.myHabits.length, 1);
-      expect(habitViewModel.myHabits[0].habitName, habitName);
-      expect(habitViewModel.notifyListenersCalled, true);
-      expect(habitViewModel.notifyListenersCalledCount, 1);
+      expect(myHabitViewModel.myHabits.length, 2);
+      expect(myHabitViewModel.myHabits[1].habitName, habitName);
+      expect(myHabitViewModel.notifyListenersCalled, true);
+      expect(myHabitViewModel.notifyListenersCalledCount, 1);
     });
 
     test("AddHabit_HabitNameIsEmpty_HabitIsNotAddedTomyHabitsList", () {
@@ -68,21 +79,13 @@ class HabitViewModel_test extends Habitviewmodel {
       expect(habitViewModel.notifyListenersCalledCount, 1);
     });
 
-    test('removes habit when valid', () {
-      final vm = HabitViewModel_test();
-      final habit = HabitsModel(habitName: 'Read');
-      vm.myHabits.add(habit);
-
-      final result = vm.RemoveHabit(habit);
-
+    test('RemoveHabit removes a habit', () {
+      bool result = myHabitViewModel.RemoveHabit(myHabit);
       expect(result, true);
-      expect(vm.myHabits.length, 0);
-      expect(vm.notifyListenersCalled, true);
-      expect(vm.notifyListenersCalledCount, 1);
+      expect(myHabitViewModel.myHabits.contains(myHabit), false);
     });
 
-
-    test('returns false when habit name is empty', () {
+     test('RemoveHabit returns false when habit name is empty', () {
       final vm = HabitViewModel_test();
       final habit = HabitsModel(habitName: '');
       final result = vm.RemoveHabit(habit);
@@ -90,21 +93,14 @@ class HabitViewModel_test extends Habitviewmodel {
       expect(result, false);
       expect(vm.notifyListenersCalled, false);
     });
-  
 
-    test('edits description when valid', () {
-      final vm = HabitViewModel_test();
-      final habit = HabitsModel(habitName: 'Run');
-      vm.myHabits.add(habit);
-
-      final result = vm.EditHabitDescription(habit, 'Morning run');
-
+    test('EditHabitDescription updates description', () {
+      bool result = myHabitViewModel.EditHabitDescription(myHabit, 'Updated Description');
       expect(result, true);
-      expect(vm.notifyListenersCalled, true);
-      expect(vm.notifyListenersCalledCount, 1);
+      expect(myHabitViewModel.GeHabitDescription(myHabit), 'Updated Description');
     });
 
-    test('returns false when description is empty', () {
+    test('EditHabitDescription returns false when description is empty', () {
       final vm = HabitViewModel_test();
       final habit = HabitsModel(habitName: 'Run');
       vm.myHabits.add(habit);
@@ -126,19 +122,13 @@ class HabitViewModel_test extends Habitviewmodel {
     });
   
 
-    test('edits color when valid', () {
-      final vm = HabitViewModel_test();
-      final habit = HabitsModel(habitName: 'Swim');
-      vm.myHabits.add(habit);
-
-      final result = vm.EditHabitColor(habit, Colors.blue);
-
+    test('EditHabitColor updates color', () {
+      bool result = myHabitViewModel.EditHabitColor(myHabit, Colors.green);
       expect(result, true);
-      expect(vm.notifyListenersCalled, true);
-      expect(vm.notifyListenersCalledCount, 1);
+      expect(myHabitViewModel.GetHabitColor(myHabit), Colors.green);
     });
 
-    test('returns false when habit not in list', () {
+    test('EditHabitColor returns false when habit not in list', () {
       final vm = HabitViewModel_test();
       final habit = HabitsModel(habitName: 'Swim');
 
@@ -148,43 +138,91 @@ class HabitViewModel_test extends Habitviewmodel {
       expect(vm.notifyListenersCalled, false);
     });
 
-    // ToDo: Need to refactor TimeTracker and write robust tests
-     group('Habitviewmodel', () {
-    late Habitviewmodel viewModel;
-    late HabitsModel habit;
-
-    setUp(() {
-      viewModel = Habitviewmodel();
-      habit = HabitsModel(habitName: 'Test Habit');
+    test('GetTodaysHabitCompletionCertificate returns false if not completed today', () {
+      myHabit.setHabitCompletionDateTime = DateTime(2020, 1, 1);
+      bool result = myHabitViewModel.GetTodaysHabitCompletionCertificate(myHabit);
+      expect(result, false);
     });
 
-    test('IsHabitStreakCompletionAchieved returns false and 0 for empty streak', () {
-      final result = viewModel.GetHabitStreakLengthAndStreakCompletionCertificate(habit);
-      expect(result.$1, false);
-      expect(result.$2, 0);
+    test('GetTodaysHabitCompletionCertificate returns true if completed today', () {
+      myHabit.setHabitCompletionDateTime = DateTime.now();
+      bool result = myHabitViewModel.GetTodaysHabitCompletionCertificate(myHabit);
+      expect(result, true);
     });
 
-    test('IsHabitStreakCompletionAchieved returns true and streak length for streak >= 2', () {
-      habit.myHabitCompletionDates.addAll([
-        DateTime.now().subtract(Duration(days: 2)),
-        DateTime.now().subtract(Duration(days: 1)),
-      ]);
-      final result = viewModel.GetHabitStreakLengthAndStreakCompletionCertificate(habit);
-      expect(result.$1, true);
-      expect(result.$2, 2);
+    test('SetHabitCompletionDateTime sets completion date', () {
+      DateTime date = DateTime.now();
+      bool result = myHabitViewModel.SetHabitCompletionDateTime(myHabit, date);
+      expect(result, true);
+      expect(myHabit.HabitCompletionDateTime(), date);
     });
 
-    test('IsHabitStreakCompletionAchieved returns false and streak length for streak < 2', () {
-      habit.myHabitCompletionDates.add(DateTime.now());
-      final result = viewModel.GetHabitStreakLengthAndStreakCompletionCertificate(habit);
-      expect(result.$1, false);
-      expect(result.$2, 1);
+    test('GeHabitDescription returns empty string for null habit', () {
+      String desc = myHabitViewModel.GeHabitDescription(HabitsModel(habitName: ''));
+      expect(desc, '');
     });
 
-    test('LiveTimeTracker triggers notifyListeners after midnight', () async {
-      // This test only checks that the method runs and does not throw.
-      // You may want to mock DateTime and ChangeNotifier for more advanced testing.
-      expect(() => viewModel.LiveTimeTracker(), returnsNormally);
+    test('GetHabitColor returns default color for null habit', () {
+      Color color = myHabitViewModel.GetHabitColor(HabitsModel(habitName: ''));
+      expect(color, Colors.grey);
+    });
+
+    test('SupportedLocales contains en, kn, hi', () {
+      expect(myHabitViewModel.supportedLocales.any((l) => l.languageCode == 'en'), true);
+      expect(myHabitViewModel.supportedLocales.any((l) => l.languageCode == 'kn'), true);
+      expect(myHabitViewModel.supportedLocales.any((l) => l.languageCode == 'hi'), true);
+    });
+
+    test('GetPreferredLocale returns preferred locale', () {
+      expect(myHabitViewModel.GetPreferredLocale, myHabitViewModel.preferredLocale);
+    });
+
+    test('LiveTimeTracker runs without error', () async {
+      expect(() => myHabitViewModel.LiveTimeTracker(DateTime.now()), returnsNormally);
+    });
+
+    // Add more tests for edge cases
+    test('RemoveHabit returns false if habit not found', () {
+      HabitsModel fakeHabit = HabitsModel(habitName: 'Fake');
+      bool result = myHabitViewModel.RemoveHabit(fakeHabit);
+      expect(result, false);
+    });
+
+    test('EditHabitDescription returns false if habit not found', () {
+      HabitsModel fakeHabit = HabitsModel(habitName: 'Fake');
+      bool result = myHabitViewModel.EditHabitDescription(fakeHabit, 'desc');
+      expect(result, false);
+    });
+
+    test('EditHabitColor returns false if habit not found', () {
+      HabitsModel fakeHabit = HabitsModel(habitName: 'Fake');
+      bool result = myHabitViewModel.EditHabitColor(fakeHabit, Colors.red);
+      expect(result, false);
+    });
+
+    test('SetHabitCompletionDateTime returns false if habit not found', () {
+      HabitsModel fakeHabit = HabitsModel(habitName: 'Fake');
+      bool result = myHabitViewModel.SetHabitCompletionDateTime(fakeHabit, DateTime.now());
+      expect(result, false);
+    });
+
+    test('GetTodaysHabitCompletionCertificate returns false if habit not found', () {
+      HabitsModel fakeHabit = HabitsModel(habitName: 'Fake');
+      bool result = myHabitViewModel.GetTodaysHabitCompletionCertificate(fakeHabit);
+      expect(result, false);
+    });
+
+    test('GeHabitDescription returns empty string if habit not found', () {
+      HabitsModel fakeHabit = HabitsModel(habitName: 'Fake');
+      String desc = myHabitViewModel.GeHabitDescription(fakeHabit);
+      expect(desc, '');
+    });
+
+    test('GetHabitColor returns default color if habit not found', () {
+      HabitsModel fakeHabit = HabitsModel(habitName: 'Fake');
+      Color color = myHabitViewModel.GetHabitColor(fakeHabit);
+      expect(color, Colors.grey);
     });
   });
-  }
+}
+  
