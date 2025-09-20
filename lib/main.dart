@@ -1,6 +1,8 @@
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:may_be_too_basic/Enums/HabitAttribute.dart';
 import 'package:may_be_too_basic/Models/HabitsModel.dart';
+import 'package:may_be_too_basic/Routes/LoginUserView.dart';
+import 'package:may_be_too_basic/Routes/RegisterUserView.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:may_be_too_basic/ViewModel/HabitViewModel.dart';
@@ -23,7 +25,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: AppLocalizations.of(context)?.mayBeTooBasic,
       color: Color.fromRGBO(22, 158, 140, 0),
-      home: MyHabitView(),
       supportedLocales: [
         Locale('en'),
         Locale('kn'),
@@ -35,8 +36,16 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      //locale decides which language arb files to use
+      //So, changing locale will change the language of the app
       locale: Provider.of<Habitviewmodel>(context, listen: true)
           .GetPreferredLocale,
+      routes: {
+        '/': (context) => MyHabitView(),
+        '/registerUserView': (context) => RegisterUserView(),
+        '/loginUserView': (context) => LoginUserView(),
+      },
+      initialRoute: '/loginUserView',
     );
   }
 }
