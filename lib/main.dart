@@ -1,13 +1,29 @@
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:may_be_too_basic/Enums/HabitAttribute.dart';
 import 'package:may_be_too_basic/Models/HabitsModel.dart';
+import 'package:may_be_too_basic/Routes/LoginUserView.dart';
+import 'package:may_be_too_basic/Routes/RegisterUserView.dart';
+import 'package:may_be_too_basic/Services/FlutterLocalNotificationsService.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:may_be_too_basic/ViewModel/HabitViewModel.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:may_be_too_basic/l10n/gen_l10n/app_localizations.dart';
 
-void main() {
+void main() async{
+
+  //The below line of code ensures the async works are completed before calling the runApp.
+  WidgetsFlutterBinding.ensureInitialized();
+
+  //Below code first creates the singleton object using the factory constructor and 
+  // then calls the service initialization
+  //ToDo: The permission to be obtained only after the app starts and logged on.
+  // Now its asking before the app even starts
+  final notificationServiceObject = FlutterlocalnotificationsService.singleTonServiceObject();
+  await notificationServiceObject.InitializeLocalNotificationsService();
+  await notificationServiceObject.GetFlutterLocalNotificationsPermissionForAndroid();
+
+
   runApp(
     ChangeNotifierProvider(
         create: (context) => Habitviewmodel(), child: MyApp()),
@@ -23,7 +39,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: AppLocalizations.of(context)?.mayBeTooBasic,
       color: Color.fromRGBO(22, 158, 140, 0),
-      home: MyHabitView(),
       supportedLocales: [
         Locale('en'),
         Locale('kn'),
@@ -35,8 +50,16 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      //locale decides which language arb files to use
+      //So, changing locale will change the language of the app
       locale: Provider.of<Habitviewmodel>(context, listen: true)
           .GetPreferredLocale,
+      routes: {
+        '/': (context) => MyHabitView(),
+        '/registerUserView': (context) => RegisterUserView(),
+        '/loginUserView': (context) => LoginUserView(),
+      },
+      initialRoute: '/loginUserView',
     );
   }
 }
@@ -678,12 +701,27 @@ class MyHabitView extends StatelessWidget {
                     );
                   })),
         ]),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            myShowAddHabitForm(context);
-          },
-          tooltip: AppLocalizations.of(context)!.addHabit,
-          child: Icon(Icons.add),
+        floatingActionButton: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FloatingActionButton(
+                onPressed: () {
+                  myShowAddHabitForm(context);
+                },
+                tooltip: AppLocalizations.of(context)!.addHabit,
+                child: Icon(Icons.add),
+              ),
+          
+              FloatingActionButton(onPressed: () 
+              {
+                FlutterlocalnotificationsService.singleTonServiceObject().ShowNotification(title: "Yegfyuag", body: "ywtwe");
+              }, 
+              
+              tooltip: "Send notification",
+              child: Icon(Icons.notification_add),)
+            ],
+          ),
         ));
   }
 
