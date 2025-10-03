@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:may_be_too_basic/Common/DateTimeManager.dart';
 import 'package:may_be_too_basic/Models/HabitsModel.dart';
  
 class Habitviewmodel extends ChangeNotifier
@@ -10,6 +11,16 @@ class Habitviewmodel extends ChangeNotifier
   Locale preferredLocale = Locale('en');
 
   Locale get GetPreferredLocale => preferredLocale;
+  final dateTimeManager = DateTimeManager.DateTimeManagerSingleTonInstance;
+
+  Habitviewmodel()
+  {
+    print("${dateTimeManager.GetCurrentLocalDateTime} HabitviewModel contsructor called");
+    dateTimeManager.MidNightNotificationEvent.subscribe((notificationArgs){OnMidNightNotificationEvent(notificationArgs);}); 
+    dateTimeManager.StartTimeTrackerAndSendLocalMidNightNotifications();  
+    print("${dateTimeManager.GetCurrentLocalDateTime} HabitviewModel contsructor ended");
+
+  }
 
   bool AddHabit(String habitName)
   {
@@ -27,7 +38,6 @@ class Habitviewmodel extends ChangeNotifier
     }
     myHabits.add( newHabit);
     print("Live time tracker initiated");
-    LiveTimeTracker(DateTime.timestamp());
     print("Successfully added ${newHabit.habitName} into habit list");
     notifyListeners();
     return true;
@@ -192,28 +202,22 @@ class Habitviewmodel extends ChangeNotifier
     return myHabits[habitIndex].HabitColor();
   }
 
-  void LiveTimeTracker (DateTime timeNow) async
-  {
-    while(true)
-    {
-     var midnight = DateTime(timeNow.year, timeNow.month, timeNow.day).add(Duration(days: 1));
-    print(  "================LiveTimeTracker called at $timeNow======================="  );
-    // Check if current time is after midnight
-    if(timeNow.isAfter(midnight))
-    {
-      print("###It's a new day! Resetting daily habit completion statuses. timeNow: $timeNow, midnight: $midnight");
-      for(var habit in myHabits)
-      {
-        habit.GetTodaysHabitCompletionCertificate();
-        //GetHabitStreakLengthAndStreakCompletionCertificate(habit);
-      }
-      //notifyListeners to update UI, it will update all the listeners at main.dart and builds the respective widgets.
-      notifyListeners();
-    }
-    await Future.delayed(Duration(seconds: 15));
-    }
+  // void LiveTimeTracker (DateTime timeNow) async
+  // {
+  //   while(true)
+  //   {
+  //    var midnight = DateTime(timeNow.year, timeNow.month, timeNow.day).add(Duration(days: 1));
+  //   print(  "================LiveTimeTracker called at $timeNow======================="  );
+  //   // Check if current time is after midnight
+  //   if(timeNow.isAfter(midnight))
+  //   {
+  //     print("###It's a new day! Resetting daily habit completion statuses. timeNow: $timeNow, midnight: $midnight");
+  //     ;
+  //   }
+  //   await Future.delayed(Duration(seconds: 15));
+  //   }
     
-  }
+  // }
 
   (bool, int) GetHabitStreakLengthAndStreakCompletionCertificate(HabitsModel habit)
   {
@@ -269,5 +273,16 @@ class Habitviewmodel extends ChangeNotifier
     preferredLocale = locale;
     notifyListeners();
   }
-
+  
+  void OnMidNightNotificationEvent(DateTimeEventArgs dateTimeEventArgs) 
+  {
+    print("=============================Received the midnight notification with dateTime : ${dateTimeEventArgs.DateTimeEventArgsForEvents} ======================");
+    for(var habit in myHabits)
+      {
+        habit.GetTodaysHabitCompletionCertificate();
+        //GetHabitStreakLengthAndStreakCompletionCertificate(habit);
+      }
+      //notifyListeners to update UI, it will update all the listeners at main.dart and builds the respective widgets.
+      notifyListeners();
+  }
 }
