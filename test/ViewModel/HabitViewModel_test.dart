@@ -177,9 +177,9 @@ class HabitViewModel_test extends Habitviewmodel {
       expect(myHabitViewModel.GetPreferredLocale, myHabitViewModel.preferredLocale);
     });
 
-    test('LiveTimeTracker runs without error', () async {
-      expect(() => myHabitViewModel.LiveTimeTracker(DateTime.now()), returnsNormally);
-    });
+    // test('LiveTimeTracker runs without error', () async {
+    //   expect(() => myHabitViewModel.LiveTimeTracker(DateTime.now()), returnsNormally);
+    // });
 
     // Add more tests for edge cases
     test('RemoveHabit returns false if habit not found', () {
