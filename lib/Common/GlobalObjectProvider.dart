@@ -1,5 +1,5 @@
+import 'package:may_be_too_basic/Services/FlutterlocalnotificationsService.dart';
 import 'package:may_be_too_basic/Services/LoggerService.dart';
-import 'package:may_be_too_basic/Services/FlutterLocalNotificationsService.dart';
 
 class GlobalObjectProvider 
 {
