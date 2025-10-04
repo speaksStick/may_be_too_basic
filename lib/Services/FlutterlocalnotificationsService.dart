@@ -1,5 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
+ 
 class FlutterLocalNotificationsService {
 
   //The name _internal is a convention in Dart for private named constructors used in singleton patterns.
