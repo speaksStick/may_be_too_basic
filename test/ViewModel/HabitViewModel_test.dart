@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:may_be_too_basic/Common/DateTimeManager.dart';
-import 'package:may_be_too_basic/Common/GlobalObjectProvider.dart';
 import 'package:may_be_too_basic/Models/HabitsModel.dart';
 import 'package:may_be_too_basic/Services/LoggerService.dart';
 import 'package:may_be_too_basic/ViewModel/HabitViewModel.dart';

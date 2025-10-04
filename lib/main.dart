@@ -1,12 +1,9 @@
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:may_be_too_basic/Common/DateTimeManager.dart';
-import 'package:may_be_too_basic/Services/LoggerService.dart';
 import 'package:may_be_too_basic/Common/GlobalObjectProvider.dart';
 import 'package:may_be_too_basic/Enums/HabitAttribute.dart';
 import 'package:may_be_too_basic/Models/HabitsModel.dart';
 import 'package:may_be_too_basic/Routes/LoginUserView.dart';
 import 'package:may_be_too_basic/Routes/RegisterUserView.dart';
-import 'package:may_be_too_basic/Services/FlutterLocalNotificationsService.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:may_be_too_basic/ViewModel/HabitViewModel.dart';
