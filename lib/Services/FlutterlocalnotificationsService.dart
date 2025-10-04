@@ -1,13 +1,13 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-class FlutterlocalnotificationsService {
+class FlutterLocalNotificationsService {
 
   //The name _internal is a convention in Dart for private named constructors used in singleton patterns.
   //The underscore (_) makes the constructor private to the library.
   //internal is just a descriptive name, meaning "for internal use only".
-  static final FlutterlocalnotificationsService _singleTonServiceObject = FlutterlocalnotificationsService._internal();
-  factory FlutterlocalnotificationsService.singleTonServiceObject() => _singleTonServiceObject;
-  FlutterlocalnotificationsService._internal();
+  static final FlutterLocalNotificationsService _singleTonServiceObject = FlutterLocalNotificationsService._internal();
+  factory FlutterLocalNotificationsService.singleTonServiceObject() => _singleTonServiceObject;
+  FlutterLocalNotificationsService._internal();
 
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   bool _isInitialized = false;
