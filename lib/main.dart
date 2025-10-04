@@ -1,4 +1,5 @@
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:may_be_too_basic/Common/DateTimeManager.dart';
 import 'package:may_be_too_basic/Services/LoggerService.dart';
 import 'package:may_be_too_basic/Common/GlobalObjectProvider.dart';
 import 'package:may_be_too_basic/Enums/HabitAttribute.dart';
@@ -24,7 +25,7 @@ void main() async{
 
   runApp(
     ChangeNotifierProvider(
-        create: (context) => Habitviewmodel(), child: MyApp()),
+        create: (context) => Habitviewmodel.Product(), child: MyApp()),
   );
 }
 

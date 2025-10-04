@@ -10,10 +10,13 @@ class LoggerService {
   static File _myLogFile = File("");
   static final LoggerService _singleTonLoggingServiceObject =
       LoggerService._internal();
-  static late Logger _myLoggerService;
+  static late Logger myLoggerService;
 
   //Private Constructor
   LoggerService._internal();
+
+  //Testability constructor
+  LoggerService.TestRelatedConstructor();
 
   //Async Initializer method to get a singleton object of LoggerService class
   static Future<LoggerService> InitializeSingleTonLoggingService() async {
@@ -23,7 +26,7 @@ class LoggerService {
     //Other async operations in your app (in other functions or isolates) can still run in parallel, but inside the same async function, execution will pause at each await until the awaited Future completes.
     await _createLoggingDirectory();
 
-    _myLoggerService = Logger(
+    myLoggerService = Logger(
         printer: PrettyPrinter(
             methodCount: 0, // Number of method calls to be displayed
             errorMethodCount:
@@ -71,21 +74,21 @@ class LoggerService {
       await _myLogFile!.writeAsString(''); //Remove all old log contents
       }
     }
-    await _myLoggerService.init;
+    await myLoggerService.init;
   }
 
 
   //Public api for logging
   void LogMessage(String message) {
-    _myLoggerService.i("${DateTimeManager.GetCurrentLocalDateTime}  - ${message}");
+    myLoggerService.i("${DateTimeManager.GetCurrentLocalDateTime}  - ${message}");
   }
 
   void LogError(String message) {
-    _myLoggerService.e("${DateTimeManager.GetCurrentLocalDateTime}  - ${message}");
+    myLoggerService.e("${DateTimeManager.GetCurrentLocalDateTime}  - ${message}");
   }
 
   void LogWarning(String message) {
-    _myLoggerService.w("${DateTimeManager.GetCurrentLocalDateTime}  - ${message}");
+    myLoggerService.w("${DateTimeManager.GetCurrentLocalDateTime}  - ${message}");
   }
 }
 

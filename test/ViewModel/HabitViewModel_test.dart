@@ -1,12 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:may_be_too_basic/Common/DateTimeManager.dart';
+import 'package:may_be_too_basic/Common/GlobalObjectProvider.dart';
 import 'package:may_be_too_basic/Models/HabitsModel.dart';
+import 'package:may_be_too_basic/Services/LoggerService.dart';
 import 'package:may_be_too_basic/ViewModel/HabitViewModel.dart';
-  
+import 'package:logger/logger.dart';
+
+class MockDateTimeManager extends DateTimeManager {
+
+  MockDateTimeManager() : super.TestRelatedConstructor();
+
+  @override
+  DateTime get GetCurrentLocalDateTime => DateTime(2023, 1, 1, 12, 0, 0);
+
+  @override
+  void StartTimeTrackerAndSendLocalMidNightNotifications() {
+    // Do nothing or simulate event
+  }
+
+  @override
+  void StartTimeTrackerAndSendLocalNotificationsAtDesignatedTimes() {
+    // Do nothing or simulate event
+
+  }
+
+  @override
+  void subscribe()
+  {
+
+  }
+}
+
+class LoggerServiceMock extends LoggerService
+{
+
+  LoggerServiceMock() : super.TestRelatedConstructor();
+
+  @override
+  InitializeSingleTonLoggingService() async
+  {
+    LoggerService.myLoggerService = LoggerMock();
+  }
+}
+
+class LoggerMock extends Logger
+{
+
+}
+
+
 class HabitViewModel_test extends Habitviewmodel {
   
   bool notifyListenersCalled = false;
   int notifyListenersCalledCount = 0;
+
+  HabitViewModel_test(DateTimeManager dateTimeManager, LoggerService loggerService) : super(dateTimeManager, loggerService);
 
   @override
   void notifyListeners() {
@@ -23,12 +72,14 @@ class HabitViewModel_test extends Habitviewmodel {
     late HabitsModel myHabit;
 
     //Setup before each test
-    setUp(() {
-      myHabitViewModel = new HabitViewModel_test();
+    setUp(() async{
+      var dateTimeManagerMock = MockDateTimeManager();
+      var loggerServiceMock = LoggerServiceMock();
+      loggerServiceMock.InitializeSingleTonLoggingService();
+      myHabitViewModel = new HabitViewModel_test(dateTimeManagerMock, loggerServiceMock);
       myHabit = HabitsModel(habitName: 'Test Habit');
       myHabitViewModel.myHabits.clear();
       myHabitViewModel.myHabits.add(myHabit);
-      
     });
 
     test('AddHabit adds a habit', () {
@@ -45,38 +96,38 @@ class HabitViewModel_test extends Habitviewmodel {
 
     test("AddHabit_HabitNameIsEmpty_HabitIsNotAddedTomyHabitsList", () {
       // Arrange
-      var habitViewModel = HabitViewModel_test();
+      myHabitViewModel.myHabits.clear();
       var habitName = "";
 
       // Act
-      var result = habitViewModel.AddHabit(habitName);
+      var result = myHabitViewModel.AddHabit(habitName);
 
       // Assert
       expect(result, false);
-      expect(habitViewModel.myHabits.length, 0);
-      expect(habitViewModel.notifyListenersCalled, false);
-      expect(habitViewModel.notifyListenersCalledCount, 0);
+      expect(myHabitViewModel.myHabits.length, 0);
+      expect(myHabitViewModel.notifyListenersCalled, false);
+      expect(myHabitViewModel.notifyListenersCalledCount, 0);
     });
 
     test("AddHabit_DuplicateHabitName_HabitIsNotAddedTomyHabitsList", () {
       // Arrange
-      var habitViewModel = HabitViewModel_test();
+      myHabitViewModel.myHabits.clear();
       var habitNameOne = "Exercise";
 
       // Act
-      var resultOne = habitViewModel.AddHabit(habitNameOne);
-      var resultTwo = habitViewModel.AddHabit(habitNameOne);
+      var resultOne = myHabitViewModel.AddHabit(habitNameOne);
+      var resultTwo = myHabitViewModel.AddHabit(habitNameOne);
 
       // Assert
       expect(resultOne, true);
-      expect(habitViewModel.myHabits.length, 1);
-      expect(habitViewModel.myHabits[0].habitName, habitNameOne);
-      expect(habitViewModel.notifyListenersCalledCount, 1);
+      expect(myHabitViewModel.myHabits.length, 1);
+      expect(myHabitViewModel.myHabits[0].habitName, habitNameOne);
+      expect(myHabitViewModel.notifyListenersCalledCount, 1);
 
       expect(resultTwo, false);
-      expect(habitViewModel.myHabits.length, 1);
-      expect(habitViewModel.myHabits[0].habitName, habitNameOne);
-      expect(habitViewModel.notifyListenersCalledCount, 1);
+      expect(myHabitViewModel.myHabits.length, 1);
+      expect(myHabitViewModel.myHabits[0].habitName, habitNameOne);
+      expect(myHabitViewModel.notifyListenersCalledCount, 1);
     });
 
     test('RemoveHabit removes a habit', () {
@@ -86,12 +137,11 @@ class HabitViewModel_test extends Habitviewmodel {
     });
 
      test('RemoveHabit returns false when habit name is empty', () {
-      final vm = HabitViewModel_test();
       final habit = HabitsModel(habitName: '');
-      final result = vm.RemoveHabit(habit);
+      final result = myHabitViewModel.RemoveHabit(habit);
 
       expect(result, false);
-      expect(vm.notifyListenersCalled, false);
+      expect(myHabitViewModel.notifyListenersCalled, false);
     });
 
     test('EditHabitDescription updates description', () {
@@ -101,24 +151,22 @@ class HabitViewModel_test extends Habitviewmodel {
     });
 
     test('EditHabitDescription returns false when description is empty', () {
-      final vm = HabitViewModel_test();
       final habit = HabitsModel(habitName: 'Run');
-      vm.myHabits.add(habit);
+      myHabitViewModel.myHabits.add(habit);
 
-      final result = vm.EditHabitDescription(habit, '');
+      final result = myHabitViewModel.EditHabitDescription(habit, '');
 
       expect(result, false);
-      expect(vm.notifyListenersCalled, false);
+      expect(myHabitViewModel.notifyListenersCalled, false);
     });
 
     test('returns false when habit not in list', () {
-      final vm = HabitViewModel_test();
       final habit = HabitsModel(habitName: 'Run');
 
-      final result = vm.EditHabitDescription(habit, 'desc');
+      final result = myHabitViewModel.EditHabitDescription(habit, 'desc');
 
       expect(result, false);
-      expect(vm.notifyListenersCalled, false);
+      expect(myHabitViewModel.notifyListenersCalled, false);
     });
   
 
@@ -129,13 +177,12 @@ class HabitViewModel_test extends Habitviewmodel {
     });
 
     test('EditHabitColor returns false when habit not in list', () {
-      final vm = HabitViewModel_test();
       final habit = HabitsModel(habitName: 'Swim');
 
-      final result = vm.EditHabitColor(habit, Colors.green);
+      final result = myHabitViewModel.EditHabitColor(habit, Colors.green);
 
       expect(result, false);
-      expect(vm.notifyListenersCalled, false);
+      expect(myHabitViewModel.notifyListenersCalled, false);
     });
 
     test('GetTodaysHabitCompletionCertificate returns false if not completed today', () {

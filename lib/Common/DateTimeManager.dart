@@ -22,6 +22,8 @@ class DateTimeManager
   DateTimeManager._internal();
   static DateTimeManager get DateTimeManagerSingleTonInstance => _myDateTimeManagerSingleTonInstance;
 
+  //Testability constructor
+  DateTimeManager.TestRelatedConstructor();
 
   //Public API
   //Async method to be started. This sends the midnight notification exactly after 12 AM in the night
