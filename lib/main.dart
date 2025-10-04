@@ -1,9 +1,9 @@
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:may_be_too_basic/Common/GlobalObjectProvider.dart';
 import 'package:may_be_too_basic/Enums/HabitAttribute.dart';
 import 'package:may_be_too_basic/Models/HabitsModel.dart';
 import 'package:may_be_too_basic/Routes/LoginUserView.dart';
 import 'package:may_be_too_basic/Routes/RegisterUserView.dart';
-import 'package:may_be_too_basic/Services/FlutterLocalNotificationsService.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:may_be_too_basic/ViewModel/HabitViewModel.dart';
@@ -15,18 +15,14 @@ void main() async{
   //The below line of code ensures the async works are completed before calling the runApp.
   WidgetsFlutterBinding.ensureInitialized();
 
-  //Below code first creates the singleton object using the factory constructor and 
-  // then calls the service initialization
-  //ToDo: The permission to be obtained only after the app starts and logged on.
-  // Now its asking before the app even starts
-  final notificationServiceObject = FlutterlocalnotificationsService.singleTonServiceObject();
-  await notificationServiceObject.InitializeLocalNotificationsService();
-  await notificationServiceObject.GetFlutterLocalNotificationsPermissionForAndroid();
-
+  //The below class provides the global object access
+  //The below initialization performs all the important async initializations,
+  //before the app starts.
+  await GlobalObjectProvider.InitializeAllServicesAndAssociates();
 
   runApp(
     ChangeNotifierProvider(
-        create: (context) => Habitviewmodel(), child: MyApp()),
+        create: (context) => Habitviewmodel.Product(), child: MyApp()),
   );
 }
 
@@ -701,27 +697,12 @@ class MyHabitView extends StatelessWidget {
                     );
                   })),
         ]),
-        floatingActionButton: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FloatingActionButton(
-                onPressed: () {
-                  myShowAddHabitForm(context);
-                },
-                tooltip: AppLocalizations.of(context)!.addHabit,
-                child: Icon(Icons.add),
-              ),
-          
-              FloatingActionButton(onPressed: () 
-              {
-                FlutterlocalnotificationsService.singleTonServiceObject().ShowNotification(title: "Yegfyuag", body: "ywtwe");
-              }, 
-              
-              tooltip: "Send notification",
-              child: Icon(Icons.notification_add),)
-            ],
-          ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            myShowAddHabitForm(context);
+          },
+          tooltip: AppLocalizations.of(context)!.addHabit,
+          child: Icon(Icons.add),
         ));
   }
 

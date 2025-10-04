@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:may_be_too_basic/Common/DateTimeManager.dart';
 import 'package:may_be_too_basic/Models/HabitsModel.dart';
- 
+import 'package:may_be_too_basic/Common/GlobalObjectProvider.dart';
+import 'package:may_be_too_basic/Services/LoggerService.dart';
 class Habitviewmodel extends ChangeNotifier
 {
 
@@ -11,33 +12,36 @@ class Habitviewmodel extends ChangeNotifier
   Locale preferredLocale = Locale('en');
 
   Locale get GetPreferredLocale => preferredLocale;
-  final dateTimeManager = DateTimeManager.DateTimeManagerSingleTonInstance;
+  late LoggerService _myLoggerService;
 
-  Habitviewmodel()
+  Habitviewmodel(DateTimeManager dateTimeManager, LoggerService loggerService)
   {
-    print("${dateTimeManager.GetCurrentLocalDateTime} HabitviewModel contsructor called");
+    print("${DateTimeManager.GetCurrentLocalDateTime} HabitviewModel contsructor called");
+    _myLoggerService = loggerService;
     dateTimeManager.MidNightNotificationEvent.subscribe((notificationArgs){OnMidNightNotificationEvent(notificationArgs);}); 
-    dateTimeManager.StartTimeTrackerAndSendLocalMidNightNotifications();  
-    print("${dateTimeManager.GetCurrentLocalDateTime} HabitviewModel contsructor ended");
-
+    dateTimeManager.EveningNotificationEvent.subscribe((notificationArgs){OnEveningNotificationEvent(notificationArgs);});
+    dateTimeManager.StartTimeTrackerAndSendLocalNotificationsAtDesignatedTimes();  
+    print("${DateTimeManager.GetCurrentLocalDateTime} HabitviewModel contsructor ended");
   }
+
+  Habitviewmodel.Product(): this(DateTimeManager.DateTimeManagerSingleTonInstance, GlobalObjectProvider.LoggerServiceSingleTonObject);
+  
 
   bool AddHabit(String habitName)
   {
     
     if(habitName == null || habitName.isEmpty)
     {
-        print("Habit name is null or empty, cannot add into habit list");
+        _myLoggerService.LogWarning("Habit name is null or empty, cannot add into habit list");
         return false;
     }
     var newHabit = HabitsModel(habitName: habitName);
     if(myHabits.any((habit) => habit.habitName == habitName || newHabit.habitUId == habit.habitUId))
     {
-        print("$newHabit already exists, cannot add into habit list");
+        _myLoggerService.LogWarning("$newHabit already exists, cannot add into habit list");
         return false;
     }
     myHabits.add( newHabit);
-    print("Live time tracker initiated");
     print("Successfully added ${newHabit.habitName} into habit list");
     notifyListeners();
     return true;
@@ -47,12 +51,12 @@ class Habitviewmodel extends ChangeNotifier
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
-        print("habit is null or habit name is null or empty, cannot remove into habit list");
+        _myLoggerService.LogWarning("habit is null or habit name is null or empty, cannot remove into habit list");
         return false;
     }
 
     var removeResult = myHabits.remove( habit);
-    print(  "Successfully removed $habit into habit list: $removeResult"  );
+    _myLoggerService.LogMessage("Successfully removed $habit into habit list: $removeResult"  );
     notifyListeners();
     return removeResult;
   }
@@ -61,12 +65,12 @@ class Habitviewmodel extends ChangeNotifier
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
-        print("habit is null or habit name is null or empty, cannot edit into habit list");
+        _myLoggerService.LogWarning("habit is null or habit name is null or empty, cannot edit into habit list");
         return false;
     }
     if(newDescription == null || newDescription.isEmpty)
     {
-        print("new description is null or empty, cannot edit into habit list");
+        _myLoggerService.LogWarning("new description is null or empty, cannot edit into habit list");
         return false;
     }
 
@@ -74,12 +78,12 @@ class Habitviewmodel extends ChangeNotifier
 
     if(habitIndex == -1)
     {
-      print("Habit not found in the list, cannot edit");
+      _myLoggerService.LogError("Habit not found in the list, cannot edit");
       return false;
     } 
 
     myHabits[habitIndex].setHabitDescription = newDescription;
-    print("Successfully edited habit description to $newDescription");
+    _myLoggerService.LogMessage("Successfully edited habit description to $newDescription");
     notifyListeners();
     return true;
   }
@@ -89,12 +93,12 @@ class Habitviewmodel extends ChangeNotifier
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
-        print("habit is null or habit name is null or empty, cannot edit into habit list");
+        _myLoggerService.LogWarning("habit is null or habit name is null or empty, cannot edit into habit list");
         return false;
     }
     if(newColor == null)
     {
-        print("new color is null, cannot edit into habit list");
+        _myLoggerService.LogWarning("new color is null, cannot edit into habit list");
         return false;
     }
     print("EditHabitColor called with color: $newColor for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
@@ -102,14 +106,14 @@ class Habitviewmodel extends ChangeNotifier
 
     if(habitIndex == -1)
     {
-      print("Habit not found in the list, cannot edit");
+      _myLoggerService.LogError("Habit not found in the list, cannot edit");
       return false;
     } 
 
-    print("EditHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
+    _myLoggerService.LogMessage("EditHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
 
     myHabits[habitIndex].setHabitColor = newColor;
-    print("Successfully edited habit color to $newColor");
+    _myLoggerService.LogMessage("Successfully edited habit color to $newColor");
     notifyListeners();
     return true;
   }
@@ -119,7 +123,7 @@ class Habitviewmodel extends ChangeNotifier
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
-        print("habit is null or habit name is null or empty, cannot get today's completion certificate");
+        _myLoggerService.LogWarning("habit is null or habit name is null or empty, cannot get today's completion certificate");
         return false;
     }
 
@@ -127,7 +131,7 @@ class Habitviewmodel extends ChangeNotifier
 
     if(habitIndex == -1)
     {
-      print("Habit not found in the list, cannot get today's completion certificate");
+      _myLoggerService.LogError("Habit not found in the list, cannot get today's completion certificate");
       return false;
     } 
     return myHabits[habitIndex].GetTodaysHabitCompletionCertificate();
@@ -139,12 +143,12 @@ class Habitviewmodel extends ChangeNotifier
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
-        print("habit is null or habit name is null or empty, cannot set habit completion date");
+        _myLoggerService.LogWarning("habit is null or habit name is null or empty, cannot set habit completion date");
         return false;
     }
     if(dateTime == null)
     {
-        print("dateTime is null, cannot set habit completion date");
+        _myLoggerService.LogWarning("dateTime is null, cannot set habit completion date");
         return false;
     }
 
@@ -152,12 +156,12 @@ class Habitviewmodel extends ChangeNotifier
 
     if(habitIndex == -1)
     {
-      print("Habit not found in the list, cannot set habit completion date");
+      _myLoggerService.LogError("Habit not found in the list, cannot set habit completion date");
       return false;
     } 
 
     myHabits[habitIndex].setHabitCompletionDateTime = dateTime;
-    print("Successfully set habit completion date to $dateTime");
+    _myLoggerService.LogMessage("Successfully set habit completion date to $dateTime");
     notifyListeners();
     return true;
   }
@@ -166,18 +170,18 @@ class Habitviewmodel extends ChangeNotifier
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
-        print("habit is null or habit name is null or empty, cannot get habit description");
+        _myLoggerService.LogWarning("habit is null or habit name is null or empty, cannot get habit description");
         return "";
     }
-    print("GeHabitDescription called for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
+    _myLoggerService.LogMessage("GeHabitDescription called for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
     var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
 
     if(habitIndex == -1)
     {
-      print("Habit not found in the list, cannot get habit description");
+      _myLoggerService.LogError("Habit not found in the list, cannot get habit description");
       return "";
     } 
-    print("GeHabitDescription: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
+    _myLoggerService.LogMessage("GeHabitDescription: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
     return myHabits[habitIndex].HabitDescription();
   }
 
@@ -186,19 +190,19 @@ class Habitviewmodel extends ChangeNotifier
     //ToDo: Change default color based on gender preference
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
-        print("habit is null or habit name is null or empty, cannot get habit color");
+        _myLoggerService.LogWarning("habit is null or habit name is null or empty, cannot get habit color");
         return Colors.grey;
     }
 
-    print("GetHabitColor called for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
+    _myLoggerService.LogMessage("GetHabitColor called for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
     var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
 
     if(habitIndex == -1)
     {
-      print("Habit not found in the list, cannot get habit color");
+      _myLoggerService.LogError("Habit not found in the list, cannot get habit color");
       return Colors.grey;
     } 
-    print("GetHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
+    _myLoggerService.LogMessage("GetHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
     return myHabits[habitIndex].HabitColor();
   }
 
@@ -224,17 +228,17 @@ class Habitviewmodel extends ChangeNotifier
   
     if(habit.habitName.isEmpty)
     {
-        print("habit is null or habit name is null or empty, cannot get habit color");
+        _myLoggerService.LogWarning("habit is null or habit name is null or empty, cannot get habit color");
         return (false, 0);
     }
 
     if(habit.HabitCompletionDates().length >= 2)
     {
-      print("IsHabitStreakCompletionAchieved called for habit: ${habit.habitName} with Uid: ${habit.habitUId}"  );
+      _myLoggerService.LogMessage("IsHabitStreakCompletionAchieved called for habit: ${habit.habitName} with Uid: ${habit.habitUId}"  );
       return (true, habit.HabitCompletionDates().length);
     }
 
-    print("IsHabitStreakCompletionAchieved: habitIndex: habit: ${habit} with Uid: ${habit.habitUId} has less than 2 completion dates"  );
+    _myLoggerService.LogMessage("IsHabitStreakCompletionAchieved: habitIndex: habit: ${habit} with Uid: ${habit.habitUId} has less than 2 completion dates"  );
     return (false, habit.HabitCompletionDates().length);
   }
 
@@ -242,14 +246,14 @@ class Habitviewmodel extends ChangeNotifier
   {
     if(habit.habitName.isEmpty)
     {
-        print("habit is null or habit name is null or empty,  cannot generate streak calendar view");
+        _myLoggerService.LogWarning("habit is null or habit name is null or empty,  cannot generate streak calendar view");
         return (false, Container());
     }
     var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
 
     if(habitIndex == -1)
     {
-      print("Habit not found in the list, cannot generate streak calendar view");
+      _myLoggerService.LogError("Habit not found in the list, cannot generate streak calendar view");
       return (false, Container());
     }
 
@@ -261,22 +265,22 @@ class Habitviewmodel extends ChangeNotifier
   {
     if(locale == null)
     {
-        print("locale is null, cannot set preferred locale");
+        _myLoggerService.LogWarning("locale is null, cannot set preferred locale");
         return;
     }
     if(!supportedLocales.contains(locale))
     {
-        print("locale $locale is not supported, cannot set preferred locale");
+        _myLoggerService.LogError("locale $locale is not supported, cannot set preferred locale");
         return;
     }
-    print("Setting preferred locale to $locale");
+    _myLoggerService.LogMessage("Setting preferred locale to $locale");
     preferredLocale = locale;
     notifyListeners();
   }
   
   void OnMidNightNotificationEvent(DateTimeEventArgs dateTimeEventArgs) 
   {
-    print("=============================Received the midnight notification with dateTime : ${dateTimeEventArgs.DateTimeEventArgsForEvents} ======================");
+    _myLoggerService.LogMessage("=============================Received the midnight notification with dateTime : ${dateTimeEventArgs.DateTimeEventArgsForEvents} ======================");
     for(var habit in myHabits)
       {
         habit.GetTodaysHabitCompletionCertificate();
@@ -284,5 +288,21 @@ class Habitviewmodel extends ChangeNotifier
       }
       //notifyListeners to update UI, it will update all the listeners at main.dart and builds the respective widgets.
       notifyListeners();
+  }
+
+  void OnEveningNotificationEvent(DateTimeEventArgs dateTimeEventArgs) {
+    _myLoggerService.LogMessage(
+        "=============================Received the Evening notification with dateTime : ${dateTimeEventArgs.DateTimeEventArgsForEvents} ======================");
+    var listOfUnFinishedHabits =
+        myHabits.where((m) => m.GetTodaysHabitCompletionCertificate() == false);
+
+    if (listOfUnFinishedHabits.length > 0) {
+      _myLoggerService.LogMessage(
+          "There are uncompleted habits today");
+      GlobalObjectProvider.FlutterlocalnotificationsServiceSingleTonObject
+          .ShowNotification(
+              title: "You have an uncompleted habit today",
+              body: "Try Completing asap to continue streak!");
+    }
   }
 }
