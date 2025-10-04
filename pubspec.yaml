@@ -30,20 +30,33 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # The below package is one of the most imp package. 
+  # This provides the Change Notification to the class which hear on ChangeNotifier class.  
   provider: ^6.0.5
+  # The below package provides the color picker option for the UI.
   flutter_colorpicker: ^1.0.4
+  # The below package generates an UUID of 32 hexadecimal digits: (representing the 128-bit number)
   uuid: ^4.4.2
+  # The below package helps showing the streak calendar to user. 
   streak_calendar: ^1.1.2
+  # A unique UI effect which shines =
   shimmer: ^3.0.0
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  # The below packages are for language localization, i.e, to convert to diff languages by the help of arb files.
   flutter_localizations:
     sdk: flutter
   intl: any
+  # The below package is to send the local notifications when needed to send.
   flutter_local_notifications: ^19.4.2
+  # The below package provides logging api, which captures info such as methods, stacktrace, time, ...
   logger: ^2.6.0
+  # The below package helps to provide a path, where android has permissions to create the log files,
+  # otherwise on windows we get read-only OS errors.
   path_provider: ^2.1.5
+  # The below package helps to raise events and receive in different components when the same object used to subscribe.
+  # The below package is very similar to the events in the C#
   event: ^3.1.0
 
 dev_dependencies:
