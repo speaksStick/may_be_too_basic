@@ -175,14 +175,14 @@ class MyHabitView extends StatelessWidget {
 
   Widget CalculateHabitStreak(
       BuildContext context, double mediaQueryWidth, HabitsModel currentHabit) {
-    var streakLength = Provider.of<Habitviewmodel>(context, listen: true)
+    var streakLength = Provider.of<Habitviewmodel>(context, listen: false)
         .GetHabitStreakLengthAndStreakCompletionCertificate(currentHabit);
 
     if (streakLength.$1 == false || streakLength.$2 < 2) {
       return Text("");
     } else {
       return Text(
-        "${streakLength.$2.toString()} ${AppLocalizations.of(context)!.streakDays}}",
+        "${streakLength.$2.toString()} ${AppLocalizations.of(context)!.streakDays}",
         style: TextStyle(
           fontSize: mediaQueryWidth * 0.035, // Responsive font size
           fontWeight: FontWeight.bold,
@@ -194,7 +194,9 @@ class MyHabitView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final habits = Provider.of<Habitviewmodel>(context).myHabits;
+    GlobalObjectProvider.LoggerServiceSingleTonObject
+        .LogMessage("Building MyHabitView");
+    final habits = context.watch<Habitviewmodel>().GetAllHabitsFromHiveStorage();
     final mediaQuery = MediaQuery.of(context);
     final isLandscape = mediaQuery.orientation == Orientation.landscape;
     final mediaQueryWidth = mediaQuery.size.width;
@@ -252,7 +254,7 @@ class MyHabitView extends StatelessWidget {
                   ],
                   onChanged: (Locale? newLocale) {
                     if (newLocale != null) {
-                      Provider.of<Habitviewmodel>(context, listen: false)
+                      Provider.of<Habitviewmodel>(context, listen: true)
                           .SetPreferredLocale(newLocale);
                     }
                   },
@@ -365,7 +367,7 @@ class MyHabitView extends StatelessWidget {
                           margin: const EdgeInsets.symmetric(
                               vertical: 8, horizontal: 16),
                           color:
-                              Provider.of<Habitviewmodel>(context, listen: true)
+                              context.watch<Habitviewmodel>()
                                   .GetHabitColor(currentHabit),
                           child: Container(
                             height:
@@ -419,7 +421,7 @@ class MyHabitView extends StatelessWidget {
                                       switch (value) {
                                         case 'delete':
                                           Provider.of<Habitviewmodel>(context,
-                                                  listen: false)
+                                                  listen: true)
                                               .RemoveHabit(currentHabit);
                                           break;
                                         case 'edit':
@@ -435,7 +437,7 @@ class MyHabitView extends StatelessWidget {
                                           break;
                                         case 'mark_done':
                                           Provider.of<Habitviewmodel>(context,
-                                                  listen: false)
+                                                  listen: true)
                                               .SetHabitCompletionDateTime(
                                                   currentHabit, DateTime.now());
                                           break;
@@ -473,8 +475,8 @@ class MyHabitView extends StatelessWidget {
                                   child: SizedBox(
                                     width: mediaQueryWidth * 0.5,
                                     child: Text(
-                                      Provider.of<Habitviewmodel>(context,
-                                              listen: true)
+                                      context
+                                          .watch<Habitviewmodel>()
                                           .GeHabitDescription(currentHabit)
                                           .toString(),
                                       //To watch instead of depending on provider notification as it wont work in release mode

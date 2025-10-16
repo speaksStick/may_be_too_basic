@@ -2,25 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:streak_calendar/streak_calendar.dart';
 import 'package:uuid/uuid.dart';
+import 'package:hive/hive.dart';
+
+part 'HabitsModel.g.dart';
 
 ///This class represents the Model in the MVVM pattern
 ///This class is used to store the data for a habit
 ///This class is used by the ViewModel to update the data
+@HiveType(typeId: 0)
 class HabitsModel {
 
   //Member variables
+  @HiveField(0)
   String habitName;
+  @HiveField(1)
   String myHabitDescription = "";
-  Color habitColor = Colors.grey; // Default color
+  @HiveField(2)
+  int habitColorInt = Colors.grey.value ; // Default color
+  @HiveField(3)
   DateTime myHabitCompletionDateTime = new DateTime(1970, 1, 1);
+  @HiveField(4)
   String habitUId = Uuid().v1();
+  @HiveField(5)
   List<DateTime> myHabitCompletionDates = [];
+  @HiveField(6)
   List<DateTime> myTotalHabitCompletionDatesForStreakCalendar = [];
 
   //Getter methods
   String HabitName() => habitName;
   String HabitDescription() => myHabitDescription;
-  Color HabitColor() => habitColor;
+  Color HabitColor() => Color(habitColorInt);
   DateTime HabitCompletionDateTime() => myHabitCompletionDateTime;
   String HabitUid() => habitUId;
   List<DateTime> HabitCompletionDates() => myHabitCompletionDates;
@@ -105,47 +116,9 @@ class HabitsModel {
       print("Color is null, cannot set habit color");
       return;
     }
-    habitColor = color;
-    print("Successfully set habit color to $habitColor");
+    habitColorInt = color.value;
+    print("Successfully set habit color to $habitColorInt");
   }
-
-  ///Public methods
-  ///Returns true if the habit is marked as completed for today, 
-  ///false otherwise
-  bool GetTodaysHabitCompletionCertificate() {
-    DateTime dateTimeNow = DateTime.now();
-    DateTime dateTimeToday = DateTime(
-      dateTimeNow.year,
-      dateTimeNow.month,
-      dateTimeNow.day,
-      0,
-      0,
-      0,
-    );
-
-    DateTime habitCompletionDate = DateTime(
-      myHabitCompletionDateTime.year,
-      myHabitCompletionDateTime.month,
-      myHabitCompletionDateTime.day,
-    );
-
-    if (myHabitCompletionDateTime != null &&
-        habitCompletionDate.isBefore(dateTimeToday)) {
-      myHabitCompletionDateTime = DateTime(1970, 1, 1);
-      print("Resetting habit completion date to $myHabitCompletionDateTime");
-      return false;
-    }
-    if (myHabitCompletionDateTime != null &&
-        myHabitCompletionDateTime.isAfter(dateTimeToday)) {
-      print(
-          "Habit completion date $myHabitCompletionDateTime is after today's date $dateTimeToday");
-      return true;
-    }
-    print(
-        "Habit completion date $myHabitCompletionDateTime is not after today's date $dateTimeToday");
-    return false;
-  }
-
 
   ///Generates the streak calendar view widget
   ///Takes in the media query data and the color for the streak days

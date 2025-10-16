@@ -56,16 +56,16 @@ void main() {
       expect(habitModel.HabitCompletionDates()[1], date2);
     });
 
-    test('GetTodaysHabitCompletionCertificate returns false if not completed today', () {
-      habitModel.setHabitCompletionDateTime = DateTime(2023, 1, 1);
-      expect(habitModel.GetTodaysHabitCompletionCertificate(), false);
-    });
+    // test('GetTodaysHabitCompletionCertificate returns false if not completed today', () {
+    //   habitModel.setHabitCompletionDateTime = DateTime(2023, 1, 1);
+    //   expect(habitModel.GetTodaysHabitCompletionCertificate(), false);
+    // });
 
-    test('GetTodaysHabitCompletionCertificate returns true if completed today', () {
-      final today = DateTime.now();
-      habitModel.setHabitCompletionDateTime = today;
-      expect(habitModel.GetTodaysHabitCompletionCertificate(), true);
-    });
+    // test('GetTodaysHabitCompletionCertificate returns true if completed today', () {
+    //   final today = DateTime.now();
+    //   habitModel.setHabitCompletionDateTime = today;
+    //   expect(habitModel.GetTodaysHabitCompletionCertificate(), true);
+    // });
 
     test('GetLongestStreakLength returns correct streak', () {
       habitModel.myTotalHabitCompletionDatesForStreakCalendar.clear();

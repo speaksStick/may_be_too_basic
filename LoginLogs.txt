@@ -5,4 +5,10 @@ Created all the backlog/ features in https://github.com/speaksStick/may_be_too_b
 To generate the code for the intl package for lang localization:
 Create l10n under lib folder, create the .arb files in json format, add the supported locales
 to the MaterialWidget in the main.dart. Then create the appLocalizations.dart and other files 
-by running "flutter gen-l10n" in cmd.
+by running "flutter gen-l10n" in cmd
+
+To store the files locally, we are using the hive storage, import hive, hive_flutter in dependencies and hive_generator: 
+  build_runner: in dev_dependencies. For the Model class which needs to be stored must have attribute as @HiveType(typeId: 0, 1 ..)
+and all other fields as   @HiveField(0, 1 ,..). add part 'HabitsModel.g.dart'; after import statement. Then you need to create the Model.g.dart 
+class, generator package helps to create the class. Use the below command in terminal : "flutter packages pub run build_runner build"
+
