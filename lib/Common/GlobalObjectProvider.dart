@@ -1,4 +1,8 @@
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:may_be_too_basic/Common/GlobalAppConstants.dart';
+import 'package:may_be_too_basic/Models/HabitsModel.dart';
 import 'package:may_be_too_basic/Services/FlutterlocalnotificationsService.dart';
+import 'package:may_be_too_basic/Services/HiveStorageService.dart';
 import 'package:may_be_too_basic/Services/LoggerService.dart';
 
 class GlobalObjectProvider 
@@ -16,6 +20,13 @@ class GlobalObjectProvider
 
     //The below code creates the LogginService Singleton initilization object
     _myLoggerServiceSingleTonObject = await LoggerService.InitializeSingleTonLoggingService();
+  
+    //The below code initializes the Hive database and opens the box to be used.
+    _myHiveStorageService = HiveStorageservice.SingleTonServiceObject();
+    await Hive.initFlutter();
+    Hive.registerAdapter(HabitsModelAdapter());
+    //await Hive.deleteBoxFromDisk(Globalappconstants.habitBox);
+    await Hive.openBox<HabitsModel>(Globalappconstants.userHabitBox);
   }
 
   //LoggerService object initialization
@@ -25,4 +36,8 @@ class GlobalObjectProvider
   //FlutterlocalnotificationsService object initialization
   static late FlutterLocalNotificationsService _myFlutterlocalnotificationsService;
   static FlutterLocalNotificationsService get FlutterlocalnotificationsServiceSingleTonObject => _myFlutterlocalnotificationsService;
+
+  //HiveStorageService object initialization
+  static late HiveStorageservice _myHiveStorageService;
+  static HiveStorageservice get HiveStorageServiceSingleTonObject => _myHiveStorageService;
 }

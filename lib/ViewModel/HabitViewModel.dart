@@ -3,31 +3,34 @@ import 'package:flutter/material.dart';
 import 'package:may_be_too_basic/Common/DateTimeManager.dart';
 import 'package:may_be_too_basic/Models/HabitsModel.dart';
 import 'package:may_be_too_basic/Common/GlobalObjectProvider.dart';
+import 'package:may_be_too_basic/Services/HiveStorageService.dart';
 import 'package:may_be_too_basic/Services/LoggerService.dart';
 class Habitviewmodel extends ChangeNotifier
 {
 
-  final List<HabitsModel> myHabits = [];
+  bool _myStateChanged = false;
   final List<Locale> supportedLocales = [Locale('en'), Locale('kn'), Locale('hi')];
   Locale preferredLocale = Locale('en');
 
   Locale get GetPreferredLocale => preferredLocale;
   late LoggerService _myLoggerService;
+  late HiveStorageservice _myHiveStorageService;
 
-  Habitviewmodel(DateTimeManager dateTimeManager, LoggerService loggerService)
+  Habitviewmodel(DateTimeManager dateTimeManager, LoggerService loggerService, HiveStorageservice hiveStorageService)
   {
     print("${DateTimeManager.GetCurrentLocalDateTime} HabitviewModel contsructor called");
     _myLoggerService = loggerService;
+    _myHiveStorageService = hiveStorageService;
     dateTimeManager.MidNightNotificationEvent.subscribe((notificationArgs){OnMidNightNotificationEvent(notificationArgs);}); 
     dateTimeManager.EveningNotificationEvent.subscribe((notificationArgs){OnEveningNotificationEvent(notificationArgs);});
     dateTimeManager.StartTimeTrackerAndSendLocalNotificationsAtDesignatedTimes();  
     print("${DateTimeManager.GetCurrentLocalDateTime} HabitviewModel contsructor ended");
   }
 
-  Habitviewmodel.Product(): this(DateTimeManager.DateTimeManagerSingleTonInstance, GlobalObjectProvider.LoggerServiceSingleTonObject);
+  Habitviewmodel.Product(): this(DateTimeManager.DateTimeManagerSingleTonInstance, GlobalObjectProvider.LoggerServiceSingleTonObject, GlobalObjectProvider.HiveStorageServiceSingleTonObject);
   
 
-  bool AddHabit(String habitName)
+  Future<bool> AddHabit(String habitName) async
   {
     
     if(habitName == null || habitName.isEmpty)
@@ -36,18 +39,16 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
     var newHabit = HabitsModel(habitName: habitName);
-    if(myHabits.any((habit) => habit.habitName == habitName || newHabit.habitUId == habit.habitUId))
-    {
-        _myLoggerService.LogWarning("$newHabit already exists, cannot add into habit list");
-        return false;
-    }
-    myHabits.add( newHabit);
+    
+    //myHabits.add( newHabit);
+    _myStateChanged = !_myStateChanged;
+    await _myHiveStorageService.AddHabitToHiveBox(newHabit);
     print("Successfully added ${newHabit.habitName} into habit list");
     notifyListeners();
     return true;
   }
 
-  bool RemoveHabit(HabitsModel habit)
+  Future<bool> RemoveHabit(HabitsModel habit) async
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
@@ -55,13 +56,15 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
 
-    var removeResult = myHabits.remove( habit);
-    _myLoggerService.LogMessage("Successfully removed $habit into habit list: $removeResult"  );
+    //var removeResult = myHabits.remove( habit);
+    _myStateChanged = !_myStateChanged;
+    await _myHiveStorageService.DeleteHabitFromHiveBox(habit);
+    _myLoggerService.LogMessage("Successfully removed $habit from hive storage habit"  );
     notifyListeners();
-    return removeResult;
+    return true;
   }
 
-  bool EditHabitDescription(HabitsModel habit, String newDescription)
+  Future<bool> EditHabitDescription(HabitsModel habit, String newDescription) async
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
@@ -74,22 +77,17 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
 
-    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
+    //var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
+    _myStateChanged = !_myStateChanged;
+    await _myHiveStorageService.UpdateHabitDescriptionInHiveStorage(habit, newDescription);
 
-    if(habitIndex == -1)
-    {
-      _myLoggerService.LogError("Habit not found in the list, cannot edit");
-      return false;
-    } 
-
-    myHabits[habitIndex].setHabitDescription = newDescription;
     _myLoggerService.LogMessage("Successfully edited habit description to $newDescription");
     notifyListeners();
     return true;
   }
 
 
-  bool EditHabitColor(HabitsModel habit, Color newColor)
+  Future<bool> EditHabitColor(HabitsModel habit, Color newColor) async
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
@@ -102,17 +100,10 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
     print("EditHabitColor called with color: $newColor for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
-    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
+    //var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
+    _myStateChanged = !_myStateChanged;
 
-    if(habitIndex == -1)
-    {
-      _myLoggerService.LogError("Habit not found in the list, cannot edit");
-      return false;
-    } 
-
-    _myLoggerService.LogMessage("EditHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
-
-    myHabits[habitIndex].setHabitColor = newColor;
+    await _myHiveStorageService.UpdateHabitColor(habit, newColor.value);
     _myLoggerService.LogMessage("Successfully edited habit color to $newColor");
     notifyListeners();
     return true;
@@ -127,19 +118,14 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
 
-    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
+    //var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
 
-    if(habitIndex == -1)
-    {
-      _myLoggerService.LogError("Habit not found in the list, cannot get today's completion certificate");
-      return false;
-    } 
-    return myHabits[habitIndex].GetTodaysHabitCompletionCertificate();
+    return GetTodaysHabitCompletionCertificateUsingHabitDateTime(habit.HabitCompletionDateTime());
   }
 
 
 
-  bool SetHabitCompletionDateTime(HabitsModel habit, DateTime dateTime)
+  Future<bool> SetHabitCompletionDateTime(HabitsModel habit, DateTime dateTime) async
   {
     if(habit == null || habit.habitName == null || habit.habitName.isEmpty)
     {
@@ -152,15 +138,10 @@ class Habitviewmodel extends ChangeNotifier
         return false;
     }
 
-    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
+    //var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
+    _myStateChanged = !_myStateChanged;
 
-    if(habitIndex == -1)
-    {
-      _myLoggerService.LogError("Habit not found in the list, cannot set habit completion date");
-      return false;
-    } 
-
-    myHabits[habitIndex].setHabitCompletionDateTime = dateTime;
+    await _myHiveStorageService.UpdateHabitCompletionDateTime(habit, dateTime);
     _myLoggerService.LogMessage("Successfully set habit completion date to $dateTime");
     notifyListeners();
     return true;
@@ -174,15 +155,9 @@ class Habitviewmodel extends ChangeNotifier
         return "";
     }
     _myLoggerService.LogMessage("GeHabitDescription called for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
-    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
+    //var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
 
-    if(habitIndex == -1)
-    {
-      _myLoggerService.LogError("Habit not found in the list, cannot get habit description");
-      return "";
-    } 
-    _myLoggerService.LogMessage("GeHabitDescription: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
-    return myHabits[habitIndex].HabitDescription();
+    return GetAllHabitsFromHiveStorage().firstWhere((m) => m.habitUId == habit.habitUId).HabitDescription();
   }
 
   Color GetHabitColor(HabitsModel habit)
@@ -195,33 +170,10 @@ class Habitviewmodel extends ChangeNotifier
     }
 
     _myLoggerService.LogMessage("GetHabitColor called for habit: ${habit.habitName} with Uid: ${habit.habitUId}");
-    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
+    //var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
 
-    if(habitIndex == -1)
-    {
-      _myLoggerService.LogError("Habit not found in the list, cannot get habit color");
-      return Colors.grey;
-    } 
-    _myLoggerService.LogMessage("GetHabitColor: search successful habitIndex: ${habitIndex} habit: ${myHabits[habitIndex]} with Uid: ${myHabits[habitIndex].habitUId}");
-    return myHabits[habitIndex].HabitColor();
+    return GetAllHabitsFromHiveStorage().firstWhere((m) => m.habitUId == habit.habitUId).HabitColor();
   }
-
-  // void LiveTimeTracker (DateTime timeNow) async
-  // {
-  //   while(true)
-  //   {
-  //    var midnight = DateTime(timeNow.year, timeNow.month, timeNow.day).add(Duration(days: 1));
-  //   print(  "================LiveTimeTracker called at $timeNow======================="  );
-  //   // Check if current time is after midnight
-  //   if(timeNow.isAfter(midnight))
-  //   {
-  //     print("###It's a new day! Resetting daily habit completion statuses. timeNow: $timeNow, midnight: $midnight");
-  //     ;
-  //   }
-  //   await Future.delayed(Duration(seconds: 15));
-  //   }
-    
-  // }
 
   (bool, int) GetHabitStreakLengthAndStreakCompletionCertificate(HabitsModel habit)
   {
@@ -249,15 +201,9 @@ class Habitviewmodel extends ChangeNotifier
         _myLoggerService.LogWarning("habit is null or habit name is null or empty,  cannot generate streak calendar view");
         return (false, Container());
     }
-    var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
+    //var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
 
-    if(habitIndex == -1)
-    {
-      _myLoggerService.LogError("Habit not found in the list, cannot generate streak calendar view");
-      return (false, Container());
-    }
-
-    return (true, myHabits[habitIndex].GenerateStreakCalendarViewWidget(mediaQuery, colorForStreakDays));
+    return (true, GetAllHabitsFromHiveStorage().firstWhere((m) => m.habitUId == habit.habitUId).GenerateStreakCalendarViewWidget(mediaQuery, colorForStreakDays));
 
   }
 
@@ -273,6 +219,8 @@ class Habitviewmodel extends ChangeNotifier
         _myLoggerService.LogError("locale $locale is not supported, cannot set preferred locale");
         return;
     }
+    _myStateChanged = !_myStateChanged;
+
     _myLoggerService.LogMessage("Setting preferred locale to $locale");
     preferredLocale = locale;
     notifyListeners();
@@ -281,9 +229,9 @@ class Habitviewmodel extends ChangeNotifier
   void OnMidNightNotificationEvent(DateTimeEventArgs dateTimeEventArgs) 
   {
     _myLoggerService.LogMessage("=============================Received the midnight notification with dateTime : ${dateTimeEventArgs.DateTimeEventArgsForEvents} ======================");
-    for(var habit in myHabits)
+    for(var habit in GetAllHabitsFromHiveStorage())
       {
-        habit.GetTodaysHabitCompletionCertificate();
+        GetTodaysHabitCompletionCertificateUsingHabitDateTime(habit.HabitCompletionDateTime());
         //GetHabitStreakLengthAndStreakCompletionCertificate(habit);
       }
       //notifyListeners to update UI, it will update all the listeners at main.dart and builds the respective widgets.
@@ -294,7 +242,7 @@ class Habitviewmodel extends ChangeNotifier
     _myLoggerService.LogMessage(
         "=============================Received the Evening notification with dateTime : ${dateTimeEventArgs.DateTimeEventArgsForEvents} ======================");
     var listOfUnFinishedHabits =
-        myHabits.where((m) => m.GetTodaysHabitCompletionCertificate() == false);
+        GetAllHabitsFromHiveStorage().where((m) => GetTodaysHabitCompletionCertificateUsingHabitDateTime(m.HabitCompletionDateTime()) == false);
 
     if (listOfUnFinishedHabits.length > 0) {
       _myLoggerService.LogMessage(
@@ -304,5 +252,48 @@ class Habitviewmodel extends ChangeNotifier
               title: "You have an uncompleted habit today",
               body: "Try Completing asap to continue streak!");
     }
+  }
+
+  List<HabitsModel> GetAllHabitsFromHiveStorage()
+  {
+    //notifyListeners();
+    return _myHiveStorageService.GetAllHabitsFromHiveBox();
+  }
+
+  ///Public methods
+  ///Returns true if the habit is marked as completed for today, 
+  ///false otherwise
+  bool GetTodaysHabitCompletionCertificateUsingHabitDateTime(DateTime habitCompletionDateTime) {
+    DateTime dateTimeNow = DateTime.now();
+    DateTime dateTimeToday = DateTime(
+      dateTimeNow.year,
+      dateTimeNow.month,
+      dateTimeNow.day,
+      0,
+      0,
+      0,
+    );
+
+    DateTime habitCompletionDate = DateTime(
+      habitCompletionDateTime.year,
+      habitCompletionDateTime.month,
+      habitCompletionDateTime.day,
+    );
+
+    if (habitCompletionDateTime != null &&
+        habitCompletionDate.isBefore(dateTimeToday)) {
+      habitCompletionDateTime = DateTime(1970, 1, 1);
+      print("Resetting habit completion date to $habitCompletionDateTime");
+      return false;
+    }
+    if (habitCompletionDateTime != null &&
+        habitCompletionDateTime.isAfter(dateTimeToday)) {
+      print(
+          "Habit completion date $habitCompletionDateTime is after today's date $dateTimeToday");
+      return true;
+    }
+    print(
+        "Habit completion date $habitCompletionDateTime is not after today's date $dateTimeToday");
+    return false;
   }
 }

@@ -58,6 +58,9 @@ dependencies:
   # The below package helps to raise events and receive in different components when the same object used to subscribe.
   # The below package is very similar to the events in the C#
   event: ^3.1.0
+  #The below package is to store the data locally in a very efficient way.
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +72,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  hive_generator: 
+  build_runner: 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

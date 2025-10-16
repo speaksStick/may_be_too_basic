@@ -1,0 +1,18 @@
+1. There was an issue with the generated code by the hive_generator: & build_runner: 
+soln:- The exact fields which we are there in the Model class which are set and wanted to write 
+       to db must be decorated with @HiveField() and @HiveType(typeId: 0) for that to get elible to write to db.
+       Note: No other complex structures can be written only primary types are allowed.
+
+2. The Hive storage is written once, getting an exception related to Null when opening the box next time.
+soln:- The Hive stores the data in binary format, so any change in the structure of the Model or the class
+       which is written to db, the hive cannot desireliaze back, delete the .hive file or delete programatically.
+
+3. After changing the ViewModel code changes. There was a delay in UI update for edit desc, edit color and ui update used to 
+   happen only after the next restart or like clicking on edit description.
+soln:- Above problem occurs bcoz some how the change provider class fails to notify to View or UI about the update to the
+       ViewModel class even after calling the notifyListeners. Earlier Provider.of<ViewModel>(listen: true) was
+       used but even with listen: true, the UI update was delayed. So, the context.watch<ViewModel>().API was used.
+       With this change the UI seems to be consistent with View Model state change. There was also a expression in net 
+       that when HIVE is used to store data, unless an actual state change of an object of the class which extends the
+       ChangeNotifier does not change, there will be no notification to UI sent. So, a bool is updated on each setting 
+       of habit related info in ViewModel.
