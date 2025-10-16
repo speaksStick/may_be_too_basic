@@ -21,7 +21,7 @@ void main() {
 
     test('Set and get habit color', () {
       habitModel.setHabitColor = Colors.red;
-      expect(habitModel.HabitColor(), Colors.red);
+      expect(habitModel.HabitColor().value, Colors.red.value);
     });
 
     test('Set and get habit completion date', () {
