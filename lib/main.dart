@@ -4,6 +4,10 @@ import 'package:may_be_too_basic/Enums/HabitAttribute.dart';
 import 'package:may_be_too_basic/Models/HabitsModel.dart';
 import 'package:may_be_too_basic/Routes/LoginUserView.dart';
 import 'package:may_be_too_basic/Routes/RegisterUserView.dart';
+import 'package:may_be_too_basic/Services/FireBaseService.dart';
+import 'package:may_be_too_basic/ViewModel/LoginUserViewModel.dart';
+import 'package:may_be_too_basic/ViewModel/RegisterUserViewModel.dart';
+import 'package:may_be_too_basic/ViewModel/RoutesManagementViewModel.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:may_be_too_basic/ViewModel/HabitViewModel.dart';
@@ -21,8 +25,26 @@ void main() async{
   await GlobalObjectProvider.InitializeAllServicesAndAssociates();
 
   runApp(
-    ChangeNotifierProvider(
-        create: (context) => Habitviewmodel.Product(), child: MyApp()),
+    MultiProvider(
+      providers: 
+      [
+        //In the below code, there are currently 4 ChangeNotifierProviders classes are created and 
+        //provided to the MyApp widget tree. So, any widget inside MyApp can access these providers
+        ChangeNotifierProvider(
+        create: (context) => Habitviewmodel.Product()),
+
+        ChangeNotifierProvider(create: (context) => RegisterUserViewModel(GlobalObjectProvider.LoggerServiceSingleTonObject,
+        GlobalObjectProvider.FirebaseServiceSingleTonObject,)),
+      
+        ChangeNotifierProvider(create: (context) => LoginUserViewModel(GlobalObjectProvider.LoggerServiceSingleTonObject,
+        GlobalObjectProvider.FirebaseServiceSingleTonObject,)),
+      
+        ChangeNotifierProvider(create: (context) => RoutesManagementViewmodel(FireBaseService.singleTonServiceObject(),
+        GlobalObjectProvider.LoggerServiceSingleTonObject,)),
+      ]
+      , child: MyApp()
+      )
+    
   );
 }
 
@@ -55,8 +77,30 @@ class MyApp extends StatelessWidget {
         '/registerUserView': (context) => RegisterUserView(),
         '/loginUserView': (context) => LoginUserView(),
       },
-      initialRoute: '/loginUserView',
+      initialRoute: GetCurrentRouteBasedOnCurrentUserAuthStatus(context),
     );
+  }
+
+  // The below method provides the route info based on the current user authentication status -
+  // Logged-in/ Logged-out/ Token in local storage to determine login status after app restart
+  // CurrentUser -> null => Logged-out => Navigate to LoginUserView
+  // CurrentUser -> non-null => Logged-in => Navigate to MyHabitView/ HomeView.
+  String GetCurrentRouteBasedOnCurrentUserAuthStatus(BuildContext context) {
+    var userAuthChange = context.watch<RoutesManagementViewmodel>().GetUserAuthStatus();
+    String currentRoute;
+    if(userAuthChange == null)
+    {
+      //GlobalObjectProvider.LoggerServiceSingleTonObject.LogMessage("MyApp detected user is signed out, navigating to LoginUserView");
+      //Future.microtask(() => Navigator.pushNamedAndRemoveUntil(context, '/loginUserView', (route) => false));
+      currentRoute = '/loginUserView';
+    }
+    else
+    {
+      //GlobalObjectProvider.LoggerServiceSingleTonObject.LogMessage("MyApp detected user is signed in, navigating to MyHabitView");
+      //Future.microtask(() =>  Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false));
+      currentRoute = '/';
+    }
+    return currentRoute;
   }
 }
 
@@ -207,6 +251,49 @@ class MyHabitView extends StatelessWidget {
     print("Current habits: ${habits.toString()}");
 
     return Scaffold(
+        drawer: 
+        Drawer(
+          child: ListView(
+          padding: EdgeInsets.zero,
+
+          children: [
+            UserAccountsDrawerHeader(
+              accountName: Text(""),
+              accountEmail: Text(""),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.person, color: Colors.grey),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Logout'),
+              onTap: () async {
+                // ask for confirmation
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text('Confirm'),
+                    content: Text('Do you want to log out?'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text('No')),
+                      TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text('Yes')),
+                    ],
+                  ),
+                );
+
+                if (confirmed == true) {
+                  // perform sign out. Replace with your LoginUserViewModel sign-out method if available:
+                  await Provider.of<LoginUserViewModel>(context, listen: false).SignOutUserAsync();
+
+                  // remove all routes and go to login screen
+                  Navigator.pushNamedAndRemoveUntil(context, '/loginUserView', (route) => false);
+                }
+              },
+            ),
+            // add more menu items here
+          ],
+        ), ),  
         appBar: AppBar(
           title: Center(child: Text("...")),
           actions: [

@@ -1,12 +1,29 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:may_be_too_basic/Common/GlobalAppConstants.dart';
 import 'package:may_be_too_basic/Models/HabitsModel.dart';
+import 'package:may_be_too_basic/Services/FireBaseService.dart';
 import 'package:may_be_too_basic/Services/FlutterlocalnotificationsService.dart';
 import 'package:may_be_too_basic/Services/HiveStorageService.dart';
 import 'package:may_be_too_basic/Services/LoggerService.dart';
 
 class GlobalObjectProvider 
 {
+
+  //LoggerService object initialization
+  static late LoggerService _myLoggerServiceSingleTonObject;
+  static LoggerService get LoggerServiceSingleTonObject => _myLoggerServiceSingleTonObject;
+
+  //FlutterlocalnotificationsService object initialization
+  static late FlutterLocalNotificationsService _myFlutterlocalnotificationsService;
+  static FlutterLocalNotificationsService get FlutterlocalnotificationsServiceSingleTonObject => _myFlutterlocalnotificationsService;
+
+  //HiveStorageService object initialization
+  static late HiveStorageservice _myHiveStorageService;
+  static HiveStorageservice get HiveStorageServiceSingleTonObject => _myHiveStorageService;
+
+  static late FireBaseService _myFirebaseServiceSingleTonObject;
+  static FireBaseService get FirebaseServiceSingleTonObject => _myFirebaseServiceSingleTonObject;
+
   static Future<void> InitializeAllServicesAndAssociates() async
   {
     //Below code first creates the singleton object using the factory constructor of FlutterLocalNotificationsService,
@@ -27,17 +44,11 @@ class GlobalObjectProvider
     Hive.registerAdapter(HabitsModelAdapter());
     //await Hive.deleteBoxFromDisk(Globalappconstants.habitBox);
     await Hive.openBox<HabitsModel>(Globalappconstants.userHabitBox);
+
+    //The below code initializes the Firebase Service singleton object
+    _myFirebaseServiceSingleTonObject = FireBaseService.singleTonServiceObject();
+    await _myFirebaseServiceSingleTonObject.initializeFireBaseAppAsync();
   }
 
-  //LoggerService object initialization
-  static late LoggerService _myLoggerServiceSingleTonObject;
-  static LoggerService get LoggerServiceSingleTonObject => _myLoggerServiceSingleTonObject;
-
-  //FlutterlocalnotificationsService object initialization
-  static late FlutterLocalNotificationsService _myFlutterlocalnotificationsService;
-  static FlutterLocalNotificationsService get FlutterlocalnotificationsServiceSingleTonObject => _myFlutterlocalnotificationsService;
-
-  //HiveStorageService object initialization
-  static late HiveStorageservice _myHiveStorageService;
-  static HiveStorageservice get HiveStorageServiceSingleTonObject => _myHiveStorageService;
+  
 }
