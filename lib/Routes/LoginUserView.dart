@@ -1,6 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:may_be_too_basic/Common/GlobalObjectProvider.dart';
+import 'package:may_be_too_basic/ViewModel/LoginUserViewModel.dart';
+import 'package:may_be_too_basic/ViewModel/RegisterUserViewModel.dart';
+import 'package:provider/provider.dart';
 
 class LoginUserView extends StatelessWidget {
   const LoginUserView({super.key});
@@ -46,6 +50,8 @@ class LoginUserView extends StatelessWidget {
                       backgroundColor: const Color.fromARGB(255, 34, 35, 36),
                       child: Icon(Icons.login_rounded, size: 22, color: Colors.white),
                     ),
+                    SizedBox(height: 4),
+                    Text(GetInformationScreenWidget(context)),
                     SizedBox(height: 24),
                     Text(
                       "Login to your Account",
@@ -64,7 +70,7 @@ class LoginUserView extends StatelessWidget {
                         labelText: 'Email',
                         hintText: 'Enter your email',
                         filled: true,
-                        fillColor: const Color.fromARGB(255, 96, 96, 96),
+                        fillColor: const Color.fromARGB(255, 234, 220, 220),
                       ),
                       controller: emailController,
                       keyboardType: TextInputType.emailAddress,
@@ -77,7 +83,7 @@ class LoginUserView extends StatelessWidget {
                         labelText: 'Password',
                         hintText: 'Enter your password',
                         filled: true,
-                        fillColor: const Color.fromARGB(255, 42, 42, 42),
+                        fillColor: const Color.fromARGB(255, 231, 210, 210),
                       ),
                       controller: passwordController,
                       obscureText: true,
@@ -99,12 +105,22 @@ class LoginUserView extends StatelessWidget {
                           padding: EdgeInsets.symmetric(vertical: 16),
                           elevation: 8,
                         ),
-                        onPressed: () {
+                        onPressed: () async{
                           String email = emailController.text;
                           String password = passwordController.text;
                           print("Email: $email, Password: $password");
-                          //FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-                          Navigator.pushNamed(context, '/');
+
+                          var userLoginErrorStatus = await Provider.of<LoginUserViewModel>(context, listen: false)
+                              .LoginUserWithEmailAndPasswordAsync(UserData(email, password));
+                          if(userLoginErrorStatus)
+                          {
+                            GlobalObjectProvider.LoggerServiceSingleTonObject.LogMessage("User login successfully with status: ${userLoginErrorStatus.toString()}"); 
+                            Navigator.pushNamed(context, '/');
+                          }
+                          else
+                          {
+                            GlobalObjectProvider.LoggerServiceSingleTonObject.LogError("User Login failed.");
+                          }
                         },
                       ),
                     ),
@@ -135,3 +151,17 @@ class LoginUserView extends StatelessWidget {
     );
   }
 }
+String GetInformationScreenWidget(BuildContext context) 
+  {
+    var errorStatus = context.watch<LoginUserViewModel>().GetUserLoginErrorStatus().toString();
+    var messgae = errorStatus == "UserRegisterationErrorStatus.none" ? "" : "Error: $errorStatus";
+    return messgae;
+    // return Text(
+    //   messgae,  
+    //   style: TextStyle(
+    //     fontSize: 20,
+    //     fontWeight: FontWeight.w600,
+    //     color: Colors.white,
+    //   ),
+    // );
+  }

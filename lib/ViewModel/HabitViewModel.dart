@@ -23,6 +23,7 @@ class Habitviewmodel extends ChangeNotifier
     _myHiveStorageService = hiveStorageService;
     dateTimeManager.MidNightNotificationEvent.subscribe((notificationArgs){OnMidNightNotificationEvent(notificationArgs);}); 
     dateTimeManager.EveningNotificationEvent.subscribe((notificationArgs){OnEveningNotificationEvent(notificationArgs);});
+    dateTimeManager.CustomTimeNotificationEvent.subscribe((customEventTimeEventArgs){OnCustomTimeNotificationEvent(customEventTimeEventArgs);});
     dateTimeManager.StartTimeTrackerAndSendLocalNotificationsAtDesignatedTimes();  
     print("${DateTimeManager.GetCurrentLocalDateTime} HabitviewModel contsructor ended");
   }
@@ -120,7 +121,7 @@ class Habitviewmodel extends ChangeNotifier
 
     //var habitIndex = myHabits.indexWhere((h) => h.habitUId == habit.habitUId);
 
-    return GetTodaysHabitCompletionCertificateUsingHabitDateTime(habit.HabitCompletionDateTime());
+    return _GetTodaysHabitCompletionCertificateUsingHabitDateTime(habit.HabitCompletionDateTime());
   }
 
 
@@ -231,7 +232,7 @@ class Habitviewmodel extends ChangeNotifier
     _myLoggerService.LogMessage("=============================Received the midnight notification with dateTime : ${dateTimeEventArgs.DateTimeEventArgsForEvents} ======================");
     for(var habit in GetAllHabitsFromHiveStorage())
       {
-        GetTodaysHabitCompletionCertificateUsingHabitDateTime(habit.HabitCompletionDateTime());
+        _GetTodaysHabitCompletionCertificateUsingHabitDateTime(habit.HabitCompletionDateTime());
         //GetHabitStreakLengthAndStreakCompletionCertificate(habit);
       }
       //notifyListeners to update UI, it will update all the listeners at main.dart and builds the respective widgets.
@@ -242,7 +243,7 @@ class Habitviewmodel extends ChangeNotifier
     _myLoggerService.LogMessage(
         "=============================Received the Evening notification with dateTime : ${dateTimeEventArgs.DateTimeEventArgsForEvents} ======================");
     var listOfUnFinishedHabits =
-        GetAllHabitsFromHiveStorage().where((m) => GetTodaysHabitCompletionCertificateUsingHabitDateTime(m.HabitCompletionDateTime()) == false);
+        GetAllHabitsFromHiveStorage().where((m) => _GetTodaysHabitCompletionCertificateUsingHabitDateTime(m.HabitCompletionDateTime()) == false);
 
     if (listOfUnFinishedHabits.length > 0) {
       _myLoggerService.LogMessage(
@@ -254,16 +255,84 @@ class Habitviewmodel extends ChangeNotifier
     }
   }
 
+    void OnCustomTimeNotificationEvent(CustomEventTimeEventArgs customEventTimeEventArgs) 
+    {
+      _myLoggerService.LogMessage(
+        "=============================Received the OnCustomTimeNotificationEvent with dateTime : ${customEventTimeEventArgs.toString()} ======================");
+    
+      for(var habit in GetAllHabitsFromHiveStorage())
+        {
+          if(habit.habitUId == customEventTimeEventArgs.HabitUidWhichRequestedEvent)
+          {
+            var isHabitAlreadyCompletedForTheDay = GetTodaysHabitCompletionCertificate(habit);
+            if(!isHabitAlreadyCompletedForTheDay)
+            {
+              _myLoggerService.LogMessage(
+                  "Habit ${habit.habitName} with Uid: ${habit.habitUId} is not yet completed for today, sending notification");
+              GlobalObjectProvider.FlutterlocalnotificationsServiceSingleTonObject
+                  .ShowNotification(
+                      title: "Reminder to complete your habit: ${habit.habitName}",
+                      body: "Don't forget to complete your habit to maintain your streak!");
+            }
+          }
+        }
+    }
+
+  Future<bool> AddNewNotificationTimeForHabitReminder(HabitsModel habit, int hourHand, int minuteHand) async
+  {
+    if(habit == null || habit.habitName.isEmpty)
+    {
+        _myLoggerService.LogWarning("habit is null or habit name is null or empty, cannot add new notification time for habit reminder");
+        return false;
+    }
+    _myLoggerService.LogMessage("Adding new notification time for habit reminder for habit: ${habit.habitName} with Uid: ${habit.habitUId} at hour: $hourHand, minute: $minuteHand");
+    //DateTimeManager.DateTimeManagerSingleTonInstance.AddMyCustomTimeWhenIWantEventToBeHeard(hourHand: hourHand, minuteHand: minuteHand, habitUIdWhichRequestedEvent: habit.habitUId);
+    await _myHiveStorageService.UpdateHabitNotificationHourMinuteList((hourHand, minuteHand, habit.habitUId, false));
+    return true;
+  }
+
+  Map<String, bool> GetAllCustomNotificationTimesForAHabitAsMap(HabitsModel habit)
+  {
+    if(habit == null || habit.habitName.isEmpty)
+    {
+        _myLoggerService.LogWarning("habit is null or habit name is null or empty, cannot get all custom notification times for habit as string list");
+        return {};
+    }
+    _myLoggerService.LogMessage("Getting all custom notification times for habit: ${habit.habitName} with Uid: ${habit.habitUId} as string list");
+    var allCustomNotificationTimesMap = _GetAllCustomNotificationTimesForHabits();
+    if(allCustomNotificationTimesMap.containsKey(habit.habitUId))
+    {
+      var customTimeEventInfoStructListForSpecificHabit = allCustomNotificationTimesMap[habit.habitUId];
+      Map<String, bool> customNotifictionTimeListAsString = {};
+      for(var customTimeEventInfoStruct in customTimeEventInfoStructListForSpecificHabit!)
+      {
+        var notificationTimeString = customTimeEventInfoStruct.HourWhenEventNeedsToBeRaised.toString().padLeft(2, '0') + ":" + customTimeEventInfoStruct.MinuteWhenEventNeedsToBeRaised.toString().padLeft(2, '0');
+        var isNotificationSentForTheDay = customTimeEventInfoStruct.IsEventRaisedForTheDay as bool;
+        customNotifictionTimeListAsString[notificationTimeString] = isNotificationSentForTheDay;
+      }
+      _myLoggerService.LogMessage(  "Successfully got all custom notification times for habit: ${habit.habitName} with Uid: ${habit.habitUId} as string list: $customNotifictionTimeListAsString");
+      return customNotifictionTimeListAsString;
+    }
+    _myLoggerService.LogMessage(  "No custom notification times for habit: ${habit.habitName} with Uid: ${habit.habitUId} returning empty list");
+    return {};
+  }
+
   List<HabitsModel> GetAllHabitsFromHiveStorage()
   {
     //notifyListeners();
     return _myHiveStorageService.GetAllHabitsFromHiveBox();
   }
 
+  Map _GetAllCustomNotificationTimesForHabits()
+  {
+    _myLoggerService.LogMessage("Getting all custom notification times for habits");
+    return DateTimeManager.DateTimeManagerSingleTonInstance.GetReadOnlyCustomNotificationTimesForAllHabits();
+  }
+
   ///Public methods
   ///Returns true if the habit is marked as completed for today, 
   ///false otherwise
-  bool GetTodaysHabitCompletionCertificateUsingHabitDateTime(DateTime habitCompletionDateTime) {
+  bool _GetTodaysHabitCompletionCertificateUsingHabitDateTime(DateTime habitCompletionDateTime) {
     DateTime dateTimeNow = DateTime.now();
     DateTime dateTimeToday = DateTime(
       dateTimeNow.year,
@@ -296,4 +365,5 @@ class Habitviewmodel extends ChangeNotifier
         "Habit completion date $habitCompletionDateTime is not after today's date $dateTimeToday");
     return false;
   }
+  
 }

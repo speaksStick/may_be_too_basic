@@ -87,4 +87,19 @@ class HiveStorageservice
     await habitBox.delete(habitModelFromHiveStorage.habitUId);
     await habitBox.put(habit.habitUId, habitModelFromHiveStorage);
   }
+
+  Future<void> UpdateHabitNotificationHourMinuteList((int hourHand, int minuteHand, String habitUId,  bool isNotificationSentForTheDay) customNotificationHourMinuteOfHabitList) async
+  {
+    var habitBox = Hive.box<HabitsModel>(Globalappconstants.userHabitBox);
+    var habitModelFromHiveStorage = await habitBox.values.firstWhere((habitModel) => habitModel.habitUId == customNotificationHourMinuteOfHabitList.$3);
+    if(habitModelFromHiveStorage == null)
+    {
+      logger.LogError("HiveStorageService: UpdateHabitDescriptionInHiveStorage: Habit not found in Hive Storage, cannot update the hour minute list for custom notifications");
+      return;
+    }
+    habitModelFromHiveStorage.setCustomNotificationHourMinuteOfHabitList = customNotificationHourMinuteOfHabitList;
+
+    await habitBox.delete(habitModelFromHiveStorage.habitUId);
+    await habitBox.put(customNotificationHourMinuteOfHabitList.$3, habitModelFromHiveStorage);
+  }
 }
