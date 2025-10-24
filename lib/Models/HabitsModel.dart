@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:may_be_too_basic/Common/StringSerializerAndDeserializer.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:streak_calendar/streak_calendar.dart';
 import 'package:uuid/uuid.dart';
@@ -27,6 +28,8 @@ class HabitsModel {
   List<DateTime> myHabitCompletionDates = [];
   @HiveField(6)
   List<DateTime> myTotalHabitCompletionDatesForStreakCalendar = [];
+  @HiveField(7)
+  List<String> myCustomNotificationHourMinuteStringOfHabitList = [];
 
   //Getter methods
   String HabitName() => habitName;
@@ -40,6 +43,76 @@ class HabitsModel {
 
   //Constructor with required parameters as Habit name
   HabitsModel({required this.habitName});
+
+  set setCustomNotificationHourMinuteOfHabitList((int hourHand, int minuteHand, String habitUid, bool isNotificationSentForTheDay) customNotificationHourMinuteOfHabitList) 
+  {
+    String finalStringOfHourAndMinuteHand = _GetSerializedString(customNotificationHourMinuteOfHabitList);
+
+    for(var existingString in myCustomNotificationHourMinuteStringOfHabitList)
+    {
+      var deserializedMap = StringSerializerAndDeserializer.DeserializeHifenSeperatedStringForHabitNotificationTime(
+        hifenSeperatedHabitNotificationString: existingString,
+      );
+      if(_IsSameNotificationTimeEntryExists(deserializedMap, customNotificationHourMinuteOfHabitList))
+      {
+        print("Custom notification hour minute list is same as existing, not updating");
+
+        _UpdateIsNotificationSentForDayValueIfDifferent(deserializedMap, customNotificationHourMinuteOfHabitList, existingString, finalStringOfHourAndMinuteHand);
+        return;
+      }
+    }
+        print("Custom notification hour minute list is different, updating");
+        AddNewNotificationTimeToList(finalStringOfHourAndMinuteHand);
+        print("Successfully set custom notification hour minute list to $myCustomNotificationHourMinuteStringOfHabitList");
+  }
+
+  bool DeleteACustomNotificationTimeFromHabitList((int hourHand, int minuteHand, String habitUid, bool isNotificationSentForTheDay) customNotificationHourMinuteOfHabitList) 
+  {
+    for(var existingString in myCustomNotificationHourMinuteStringOfHabitList)
+    {
+      var deserializedMap = StringSerializerAndDeserializer.DeserializeHifenSeperatedStringForHabitNotificationTime(
+        hifenSeperatedHabitNotificationString: existingString,
+      );
+      if(_IsSameNotificationTimeEntryExists(deserializedMap, customNotificationHourMinuteOfHabitList))
+      {
+        print("Custom notification hour minute listfound, hence deleting");
+        myCustomNotificationHourMinuteStringOfHabitList.remove(existingString);
+        return true;
+      }
+    }
+        print("Custom notification hour minute list was not found in habit list");
+        return false;
+  }
+
+  void AddNewNotificationTimeToList(String finalStringOfHourAndMinuteHand) {
+    myCustomNotificationHourMinuteStringOfHabitList.add(finalStringOfHourAndMinuteHand);
+  }
+
+  bool _IsSameNotificationTimeEntryExists(Map<String, dynamic> deserializedMap, (int, int, String, bool) customNotificationHourMinuteOfHabitList) {
+    return deserializedMap['hourHand'] == customNotificationHourMinuteOfHabitList.$1 &&
+       deserializedMap['minuteHand'] == customNotificationHourMinuteOfHabitList.$2 &&
+       deserializedMap['habitUid'] == customNotificationHourMinuteOfHabitList.$3;
+  }
+
+  void _UpdateIsNotificationSentForDayValueIfDifferent(Map<String, dynamic> deserializedMap, (int, int, String, bool) customNotificationHourMinuteOfHabitList, String existingString, String finalStringOfHourAndMinuteHand) {
+    if(deserializedMap['isNotificationSentForTheDay'] != customNotificationHourMinuteOfHabitList.$4)
+    {
+      print("Notification sent for the day value is different, updating");
+      myCustomNotificationHourMinuteStringOfHabitList.remove(existingString);
+      myCustomNotificationHourMinuteStringOfHabitList.add(finalStringOfHourAndMinuteHand);
+      print("Successfully set custom notification hour minute list to $myCustomNotificationHourMinuteStringOfHabitList");
+    }
+  }
+
+  String _GetSerializedString((int, int, String, bool) customNotificationHourMinuteOfHabitList) {
+    var finalStringOfHourAndMinuteHand = StringSerializerAndDeserializer.StringifyWithHifenSeperatedForHabitNotificationTime(
+      hourHand: customNotificationHourMinuteOfHabitList.$1,
+      minuteHand: customNotificationHourMinuteOfHabitList.$2,
+      habitUid: customNotificationHourMinuteOfHabitList.$3,
+      isNotificationSentForTheDay: customNotificationHourMinuteOfHabitList.$4,
+    );
+    return finalStringOfHourAndMinuteHand;
+  }
 
   //Setter methods
 

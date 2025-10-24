@@ -25,13 +25,15 @@ class HabitsModelAdapter extends TypeAdapter<HabitsModel> {
       ..habitUId = fields[4] as String
       ..myHabitCompletionDates = (fields[5] as List).cast<DateTime>()
       ..myTotalHabitCompletionDatesForStreakCalendar =
-          (fields[6] as List).cast<DateTime>();
+          (fields[6] as List).cast<DateTime>()
+      ..myCustomNotificationHourMinuteStringOfHabitList =
+          (fields[7] as List).cast<String>();
   }
 
   @override
   void write(BinaryWriter writer, HabitsModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.habitName)
       ..writeByte(1)
@@ -45,7 +47,9 @@ class HabitsModelAdapter extends TypeAdapter<HabitsModel> {
       ..writeByte(5)
       ..write(obj.myHabitCompletionDates)
       ..writeByte(6)
-      ..write(obj.myTotalHabitCompletionDatesForStreakCalendar);
+      ..write(obj.myTotalHabitCompletionDatesForStreakCalendar)
+      ..writeByte(7)
+      ..write(obj.myCustomNotificationHourMinuteStringOfHabitList);
   }
 
   @override

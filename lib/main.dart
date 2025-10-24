@@ -367,7 +367,35 @@ class MyHabitView extends StatelessWidget {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                  title: Text(currentHabit.habitName),
+                                  title: Row(
+                                    children: [
+                                      Text(currentHabit.habitName),
+                                      Spacer(),
+                                      IconButton(
+                                        icon: Icon(Icons.notification_add_sharp),
+                                        onPressed: () async
+                                        {
+                                            var _selectedTime = TimeOfDay.now();
+                                            final TimeOfDay? pickedTime =
+                                                await showTimePicker(
+                                              context: context,
+                                              initialTime:
+                                                  _selectedTime, // Set the initial time
+                                              initialEntryMode: TimePickerEntryMode
+                                                  .input, // Optional: Choose dial or input mode
+                                            );
+
+                                            if (pickedTime != null &&
+                                                pickedTime.minute >= _selectedTime.minute) 
+                                                {
+                                                Provider.of<Habitviewmodel>(context, listen: false)
+                                                .AddNewNotificationTimeForHabitReminder(
+                                                    currentHabit, pickedTime.hour, pickedTime.minute);
+                                                }
+                                          }
+                                      ),
+                                    ],
+                                  ),
                                   content: SizedBox(
                                       width: double.maxFinite,
                                       child: Text(
@@ -528,6 +556,127 @@ class MyHabitView extends StatelessWidget {
                                               .SetHabitCompletionDateTime(
                                                   currentHabit, DateTime.now());
                                           break;
+                                        case 'show_notification_time':
+                                          var notificationTimesAndStatus = Provider.of<Habitviewmodel>(context, listen: false)
+                                              .GetAllCustomNotificationTimesForAHabitAsMap(currentHabit);
+                                          
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext buildContext) {
+                                              return AlertDialog(
+                                                title: Text("Configured Notification Times"),
+                                                content: SizedBox(
+                                                  width: double.maxFinite,
+                                                  child:
+                                                          SingleChildScrollView(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            // Header row
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
+                                                                      horizontal:
+                                                                          16,
+                                                                      vertical:
+                                                                          8),
+                                                              child: Row(
+                                                                children: const [
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                      "Time",
+                                                                      style: TextStyle(
+                                                                          fontWeight:
+                                                                              FontWeight.bold),
+                                                                    ),
+                                                                  ),
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                      "Notification sent status",
+                                                                      style: TextStyle(
+                                                                          fontWeight:
+                                                                              FontWeight.bold),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+
+                                                            // List items
+                                                            ListView.builder(
+                                                              shrinkWrap: true,
+                                                              itemCount:
+                                                                  notificationTimesAndStatus
+                                                                      .length,
+                                                              itemBuilder:
+                                                                  (context,
+                                                                      index) {
+                                                                var timeInfo =
+                                                                    notificationTimesAndStatus
+                                                                        .entries
+                                                                        .elementAt(
+                                                                            index)
+                                                                        .key;
+                                                                var suitableIcon = notificationTimesAndStatus
+                                                                        .entries
+                                                                        .elementAt(
+                                                                            index)
+                                                                        .value
+                                                                    ? Icons
+                                                                        .check
+                                                                    : Icons
+                                                                        .close;
+                                                                var iconColour = notificationTimesAndStatus
+                                                                        .entries
+                                                                        .elementAt(
+                                                                            index)
+                                                                        .value
+                                                                    ? const Color(
+                                                                        0xFF4CAF50)
+                                                                    : const Color(
+                                                                        0xFFD03335);
+                                                                return ListTile(
+                                                                  leading: Icon(
+                                                                      Icons
+                                                                          .access_time),
+                                                                  title: Row(
+                                                                    children: [
+                                                                      Text(
+                                                                          "${timeInfo.toString()}"),
+                                                                      SizedBox(
+                                                                        width:
+                                                                            80,
+                                                                      ),
+                                                                      Icon(
+                                                                        suitableIcon,
+                                                                        color:
+                                                                            iconColour,
+                                                                        size:
+                                                                            50.0,
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  //subtitle: Text(timeInfo.IsEventRaisedForTheDay ? AppLocalizations.of(context)!.notificationSent : AppLocalizations.of(context)!.notificationPending),
+                                                                );
+                                                              },
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )  
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    child: Text(AppLocalizations.of(context)!.cancel),
+                                                    onPressed: () => Navigator.of(context).pop(),
+                                                  ),
+                                                ],
+                                              );
+                                            }
+                                          );
+                                          break;
                                         default:
                                           print("Unknown menu item selected");
                                       }
@@ -549,6 +698,10 @@ class MyHabitView extends StatelessWidget {
                                         PopupMenuItem(
                                           value: 'mark_done',
                                           child: Text(AppLocalizations.of(context)!.markDone),
+                                        ),
+                                        PopupMenuItem(
+                                          value: 'show_notification_time',
+                                          child: Text("Show configured notification times"),
                                         ),
                                       ];
                                     },
