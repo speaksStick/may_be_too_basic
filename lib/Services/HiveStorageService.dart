@@ -102,4 +102,23 @@ class HiveStorageservice
     await habitBox.delete(habitModelFromHiveStorage.habitUId);
     await habitBox.put(customNotificationHourMinuteOfHabitList.$3, habitModelFromHiveStorage);
   }
+
+  Future<bool> RemoveAHabitNotificationFromFromCustomNotificationList((int hourHand, int minuteHand, String habitUId, bool isNotificationSentForTheDay) customNotificationHourMinuteOfHabitList) async
+  {
+    var habitBox = Hive.box<HabitsModel>(Globalappconstants.userHabitBox);
+
+    var habitFromHiveStorage = await habitBox.values.firstWhere((habitModel) => habitModel.habitUId == customNotificationHourMinuteOfHabitList.$3);
+
+    if(habitFromHiveStorage == null)
+    {
+      logger.LogError("No habit in Hivestorage associated to the habitUid: ${customNotificationHourMinuteOfHabitList.$3}");
+      return false;
+    }
+
+    habitFromHiveStorage.DeleteACustomNotificationTimeFromHabitList((customNotificationHourMinuteOfHabitList.$1, customNotificationHourMinuteOfHabitList.$2, customNotificationHourMinuteOfHabitList.$3, customNotificationHourMinuteOfHabitList.$4));
+
+    await habitBox.delete(customNotificationHourMinuteOfHabitList.$3);
+    await habitBox.put(customNotificationHourMinuteOfHabitList.$3, habitFromHiveStorage);
+    return true;
+  }
 }

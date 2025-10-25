@@ -557,7 +557,7 @@ class MyHabitView extends StatelessWidget {
                                                   currentHabit, DateTime.now());
                                           break;
                                         case 'show_notification_time':
-                                          var notificationTimesAndStatus = Provider.of<Habitviewmodel>(context, listen: false)
+                                          var notificationTimesAndStatusForAHabit = Provider.of<Habitviewmodel>(context, listen: false)
                                               .GetAllCustomNotificationTimesForAHabitAsMap(currentHabit);
                                           
                                           showDialog(
@@ -567,8 +567,7 @@ class MyHabitView extends StatelessWidget {
                                                 title: Text("Configured Notification Times"),
                                                 content: SizedBox(
                                                   width: double.maxFinite,
-                                                  child:
-                                                          SingleChildScrollView(
+                                                  child: SingleChildScrollView(
                                                         child: Column(
                                                           crossAxisAlignment:
                                                               CrossAxisAlignment
@@ -580,7 +579,7 @@ class MyHabitView extends StatelessWidget {
                                                                   const EdgeInsets
                                                                       .symmetric(
                                                                       horizontal:
-                                                                          16,
+                                                                          25,
                                                                       vertical:
                                                                           8),
                                                               child: Row(
@@ -609,18 +608,22 @@ class MyHabitView extends StatelessWidget {
                                                             ListView.builder(
                                                               shrinkWrap: true,
                                                               itemCount:
-                                                                  notificationTimesAndStatus
+                                                                  notificationTimesAndStatusForAHabit.$1
                                                                       .length,
                                                               itemBuilder:
                                                                   (context,
                                                                       index) {
                                                                 var timeInfo =
-                                                                    notificationTimesAndStatus
+                                                                    notificationTimesAndStatusForAHabit.$1
                                                                         .entries
                                                                         .elementAt(
                                                                             index)
                                                                         .key;
-                                                                var suitableIcon = notificationTimesAndStatus
+                                                                var timeInfoStringList = timeInfo.split(':');
+                                                                var hourIndex = int.parse(timeInfoStringList[0]);
+                                                                var minuteIndex = int.parse(timeInfoStringList[1]);
+                                                                var isNotificationSentForDayBool = notificationTimesAndStatusForAHabit.$1.entries.elementAt(index).value;
+                                                                var suitableIcon = notificationTimesAndStatusForAHabit.$1
                                                                         .entries
                                                                         .elementAt(
                                                                             index)
@@ -629,7 +632,7 @@ class MyHabitView extends StatelessWidget {
                                                                         .check
                                                                     : Icons
                                                                         .close;
-                                                                var iconColour = notificationTimesAndStatus
+                                                                var iconColour = notificationTimesAndStatusForAHabit.$1
                                                                         .entries
                                                                         .elementAt(
                                                                             index)
@@ -638,18 +641,27 @@ class MyHabitView extends StatelessWidget {
                                                                         0xFF4CAF50)
                                                                     : const Color(
                                                                         0xFFD03335);
+                                                                print("############################### TIMEINFO:- $timeInfo ");
                                                                 return ListTile(
-                                                                  leading: Icon(
-                                                                      Icons
-                                                                          .access_time),
+                                                                  //leading: Icon(Icons.lock_clock_outlined), 
                                                                   title: Row(
+                                                                      // mainAxisAlignment:
+                                                                      //   MainAxisAlignment
+                                                                      //       .spaceBetween, // Proper spacing
                                                                     children: [
-                                                                      Text(
-                                                                          "${timeInfo.toString()}"),
-                                                                      SizedBox(
-                                                                        width:
-                                                                            80,
+                                                                      
+                                                                      Expanded(
+                                                                        // Wrap Text in Expanded
+                                                                        child:
+                                                                            Text(
+                                                                          timeInfo,
+                                                                          style:
+                                                                              TextStyle(fontSize: 16),
+                                                                        ),
                                                                       ),
+                                                                      SizedBox(
+                                                                          width:
+                                                                              5), // Add some spacing
                                                                       Icon(
                                                                         suitableIcon,
                                                                         color:
@@ -657,7 +669,16 @@ class MyHabitView extends StatelessWidget {
                                                                         size:
                                                                             50.0,
                                                                       ),
+                                                                      
+                                                                      
                                                                     ],
+                                                                    
+                                                                  ),
+                                                                  trailing: IconButton(onPressed: ()async
+                                                                  {
+                                                                    Provider.of<Habitviewmodel>(context, listen: true).RemoveAHabitNotificationTimeFromCustomHabitNotificationList((hourIndex, minuteIndex, notificationTimesAndStatusForAHabit.$2, false));
+                                                                    Navigator.of(context).pop();
+                                                                  }, icon: Icon(Icons.delete),
                                                                   ),
                                                                   //subtitle: Text(timeInfo.IsEventRaisedForTheDay ? AppLocalizations.of(context)!.notificationSent : AppLocalizations.of(context)!.notificationPending),
                                                                 );

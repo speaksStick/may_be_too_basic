@@ -291,12 +291,12 @@ class Habitviewmodel extends ChangeNotifier
     return true;
   }
 
-  Map<String, bool> GetAllCustomNotificationTimesForAHabitAsMap(HabitsModel habit)
+  (Map<String, bool>, String) GetAllCustomNotificationTimesForAHabitAsMap(HabitsModel habit)
   {
     if(habit == null || habit.habitName.isEmpty)
     {
         _myLoggerService.LogWarning("habit is null or habit name is null or empty, cannot get all custom notification times for habit as string list");
-        return {};
+        return ({}, "");
     }
     _myLoggerService.LogMessage("Getting all custom notification times for habit: ${habit.habitName} with Uid: ${habit.habitUId} as string list");
     var allCustomNotificationTimesMap = _GetAllCustomNotificationTimesForHabits();
@@ -305,22 +305,29 @@ class Habitviewmodel extends ChangeNotifier
       var customTimeEventInfoStructListForSpecificHabit = allCustomNotificationTimesMap[habit.habitUId];
       Map<String, bool> customNotifictionTimeListAsString = {};
       for(var customTimeEventInfoStruct in customTimeEventInfoStructListForSpecificHabit!)
-      {
+      { 
         var notificationTimeString = customTimeEventInfoStruct.HourWhenEventNeedsToBeRaised.toString().padLeft(2, '0') + ":" + customTimeEventInfoStruct.MinuteWhenEventNeedsToBeRaised.toString().padLeft(2, '0');
         var isNotificationSentForTheDay = customTimeEventInfoStruct.IsEventRaisedForTheDay as bool;
         customNotifictionTimeListAsString[notificationTimeString] = isNotificationSentForTheDay;
       }
       _myLoggerService.LogMessage(  "Successfully got all custom notification times for habit: ${habit.habitName} with Uid: ${habit.habitUId} as string list: $customNotifictionTimeListAsString");
-      return customNotifictionTimeListAsString;
+      return (customNotifictionTimeListAsString, habit.habitUId);
     }
     _myLoggerService.LogMessage(  "No custom notification times for habit: ${habit.habitName} with Uid: ${habit.habitUId} returning empty list");
-    return {};
+    return ({}, "");
   }
 
   List<HabitsModel> GetAllHabitsFromHiveStorage()
   {
     //notifyListeners();
     return _myHiveStorageService.GetAllHabitsFromHiveBox();
+  }
+
+  Future<bool> RemoveAHabitNotificationTimeFromCustomHabitNotificationList((int hourHand, int minuteHand, String habitUId, bool isNotificationSentForTheDay) customNotificationHourMinuteOfHabitList) async
+  {
+    var deleteResult = await _myHiveStorageService.RemoveAHabitNotificationFromFromCustomNotificationList(customNotificationHourMinuteOfHabitList);
+    notifyListeners();
+    return deleteResult;
   }
 
   Map _GetAllCustomNotificationTimesForHabits()
